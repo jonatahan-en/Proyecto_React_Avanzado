@@ -25,7 +25,12 @@
     // Path alias
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@layout/*": ["./components/layout/*"],
+      "@pages/*": ["./pages/*"],
+      "@auth/*": ["./pages/auth/*"],
+      "@adverts/*": ["./pages/adverts/*"]
     }
   },
   "include": ["src"]

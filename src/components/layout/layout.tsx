@@ -11,13 +11,20 @@ export default function Layout({ children }: { children: ReactNode }) {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <NavLink to="/adverts" end className="group">
-                <span className="group-[.active]:underline">Adverts List</span>
+              <NavLink
+                to="/adverts"
+                end
+                className="aria-[current=page]:underline"
+              >
+                Adverts List
               </NavLink>
             </li>
             <li>
-              <NavLink to="/adverts/new" className="group">
-                <span className="group-[.active]:underline">New Advert</span>
+              <NavLink
+                to="/adverts/new"
+                className="aria-[current=page]:underline"
+              >
+                New Advert
               </NavLink>
             </li>
             <li>
