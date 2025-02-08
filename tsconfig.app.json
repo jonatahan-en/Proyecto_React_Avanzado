@@ -6,6 +6,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -26,11 +27,13 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"],
+      "@api/*": ["./api/*"],
       "@components/*": ["./components/*"],
       "@layout/*": ["./components/layout/*"],
       "@pages/*": ["./pages/*"],
       "@auth/*": ["./pages/auth/*"],
-      "@adverts/*": ["./pages/adverts/*"]
+      "@adverts/*": ["./pages/adverts/*"],
+      "@utils/*": ["./utils/*"]
     }
   },
   "include": ["src"]

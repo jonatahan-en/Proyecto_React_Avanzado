@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
 import { Link, NavLink } from "react-router";
+import AuthButton from "@auth/components/auth-button";
+import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -28,7 +29,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               </NavLink>
             </li>
             <li>
-              <Link to="/login">Login</Link>
+              <AuthButton />
             </li>
           </ul>
         </nav>

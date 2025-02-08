@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from "react-router";
 import Layout from "@layout/layout";
 import LoginPage from "@auth/login-page";
+import RequireAuth from "@auth/components/require-auth";
 import AdvertsPage from "@adverts/adverts-page";
 import AdvertPage from "@adverts/advert-page";
 import NewAdvertPage from "@adverts/new-advert-page";
@@ -13,9 +14,11 @@ export default function App() {
       <Route
         path="/adverts"
         element={
-          <Layout>
-            <Outlet />
-          </Layout>
+          <RequireAuth>
+            <Layout>
+              <Outlet />
+            </Layout>
+          </RequireAuth>
         }
       >
         <Route index element={<AdvertsPage />}></Route>
