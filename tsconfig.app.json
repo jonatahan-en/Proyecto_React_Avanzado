@@ -30,6 +30,7 @@
       "@api/*": ["./api/*"],
       "@components/*": ["./components/*"],
       "@layout/*": ["./components/layout/*"],
+      "@shared/*": ["./components/shared/*"],
       "@pages/*": ["./pages/*"],
       "@auth/*": ["./pages/auth/*"],
       "@adverts/*": ["./pages/adverts/*"],

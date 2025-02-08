@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { deleteAdvert, getAdvert } from "./service";
-import type { Advert } from "./types";
 import { isApiClientError } from "@/api/error";
+import ConfirmationButton from "@shared/confirmation-button";
+import type { Advert } from "./types";
 
 export default function AdvertPage() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function AdvertPage() {
     loadAdvert();
   }, [advertId, handleError]);
 
-  const handleClick = async () => {
+  const handleDeleteClick = async () => {
     try {
       await deleteAdvert(advertId);
       navigate("/adverts");
@@ -78,7 +79,9 @@ export default function AdvertPage() {
           <span key={tag}>{tag}</span>
         ))}
         {advert.photo && <img alt={advert.name} src={advert.photo} />}
-        <button onClick={handleClick}>Delete</button>
+        <ConfirmationButton onConfirm={handleDeleteClick}>
+          Delete
+        </ConfirmationButton>
       </article>
     </div>
   );

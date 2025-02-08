@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import ConfirmationButton from "@shared/confirmation-button";
 import { useAuth } from "../context";
 import { logout } from "../service";
 
@@ -11,7 +12,9 @@ export default function AuthButton() {
   };
 
   if (isLogged) {
-    return <button onClick={handleClick}>Logout</button>;
+    return (
+      <ConfirmationButton onConfirm={handleClick}>Logout</ConfirmationButton>
+    );
   }
 
   return <Link to="/login">Login</Link>;
