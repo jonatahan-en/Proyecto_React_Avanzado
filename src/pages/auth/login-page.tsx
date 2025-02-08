@@ -66,7 +66,7 @@ export default function LoginPage() {
           </label>
           <label className="block">
             remember
-            <input type="checkbox" name="remember" value="on" />
+            <input type="checkbox" name="remember" value="remember" />
           </label>
           <button type="submit" disabled={buttonDisabled}>
             Log in
