@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { isApiClientError } from "@/api/error";
 import FormField from "@/components/shared/form-field";
 import FormButton from "@/components/shared/form-button";
+import Logo from "@/assets/nodepop-react";
 import type { Credentials } from "./types";
 
 function LoginForm({
@@ -101,9 +102,12 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto h-dvh max-w-md">
-      <div className="grid gap-8 px-6 py-6 pt-20">
-        <header className="grid gap-2 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">Log in to Nodepop</h1>
+      <div className="grid gap-8 px-6 py-6 pt-12">
+        <header className="grid justify-items-center gap-4">
+          <Logo className="h-24 w-24" />
+          <h1 className="text-center text-3xl font-bold sm:text-4xl">
+            Log in to Nodepop
+          </h1>
         </header>
         <LoginForm
           onSubmit={async ({ remember, ...credentials }) => {
