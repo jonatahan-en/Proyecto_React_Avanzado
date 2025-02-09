@@ -4,10 +4,11 @@ import { deleteAdvert, getAdvert } from "./service";
 import { isApiClientError } from "@/api/error";
 import ConfirmationButton from "@/components/shared/confirmation-button";
 import type { Advert, Tags } from "./types";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { toast } from "sonner";
+import ActionButton from "@/components/shared/action-button";
 
 const tagsColors: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -61,8 +62,8 @@ export default function AdvertPage() {
   const navigate = useNavigate();
   const params = useParams();
   const [advert, setAdvert] = useState<Advert | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const advertId = params.advertId ?? "";
 
@@ -77,9 +78,9 @@ export default function AdvertPage() {
         }
       }
       if (error instanceof Error) {
-        setError(error);
+        return toast.error(error.message);
       }
-      // TODO: fire an error to be caught by ErrorBoundary
+      toast.error("Unexpected error");
     },
     [navigate],
   );
@@ -87,13 +88,13 @@ export default function AdvertPage() {
   useEffect(() => {
     async function loadAdvert() {
       try {
-        setIsLoading(true);
+        setLoading(true);
         const advert = await getAdvert(advertId);
         setAdvert(advert);
       } catch (error) {
         handleError(error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     }
     loadAdvert();
@@ -101,22 +102,17 @@ export default function AdvertPage() {
 
   const handleDelete = async () => {
     try {
+      setDeleting(true);
       await deleteAdvert(advertId);
       navigate("/adverts");
     } catch (error) {
       handleError(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
-  if (error) {
-    return (
-      <div>
-        Ooooops: <strong>{error.message}</strong>
-      </div>
-    );
-  }
-
-  if (!advert || isLoading) {
+  if (!advert || loading) {
     return "Loading....";
   }
 
@@ -144,10 +140,15 @@ export default function AdvertPage() {
       <ConfirmationButton
         variant="destructive"
         confirmation="Are you sure you want to delete this advert?"
-        actionButton={
-          <Button onClick={handleDelete} variant="destructive">
-            Yes
-          </Button>
+        confirmButton={
+          <ActionButton
+            onClick={handleDelete}
+            variant="destructive"
+            disabled={deleting}
+            loading={deleting}
+          >
+            {deleting ? "" : "Yes"}
+          </ActionButton>
         }
       >
         <Trash2 />

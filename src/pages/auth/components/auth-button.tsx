@@ -16,7 +16,7 @@ function LogoutButton() {
     <ConfirmationButton
       variant="outline"
       confirmation="Are you sure you want to log out?"
-      actionButton={
+      confirmButton={
         <Button onClick={handleLogout} variant="destructive">
           Yes
         </Button>

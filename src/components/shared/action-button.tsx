@@ -2,19 +2,19 @@ import type { ComponentProps } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 
-type ButtonProps = ComponentProps<"button">;
+type ButtonProps = ComponentProps<typeof Button>;
 
-type FormButtonProps = ButtonProps & {
+type ActionButtonProps = ButtonProps & {
   loading?: boolean;
 };
 
-export default function FormButton({
+export default function ActionButton({
   loading,
   children,
   ...props
-}: FormButtonProps) {
+}: ActionButtonProps) {
   return (
-    <Button type="submit" {...props}>
+    <Button {...props}>
       {loading && <Loader2 className="animate-spin" />}
       {children}
     </Button>

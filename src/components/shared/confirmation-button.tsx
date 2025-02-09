@@ -6,12 +6,12 @@ type ButtonProps = ComponentProps<typeof Button>;
 
 type ConfirmationButtonProps = Omit<ButtonProps, "onClick"> & {
   confirmation: ReactNode;
-  actionButton: ReactNode;
+  confirmButton: ReactNode;
 };
 
-export default function PopoverButton({
+export default function ConfirmationButton({
   confirmation,
-  actionButton,
+  confirmButton,
   ...props
 }: ConfirmationButtonProps) {
   return (
@@ -21,7 +21,7 @@ export default function PopoverButton({
       </PopoverTrigger>
       <PopoverContent className="flex items-center gap-4">
         {confirmation}
-        {actionButton}
+        {confirmButton}
       </PopoverContent>
     </Popover>
   );

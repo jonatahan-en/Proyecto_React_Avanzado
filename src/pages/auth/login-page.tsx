@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { isApiClientError } from "@/api/error";
 import FormField from "@/components/shared/form-field";
-import FormButton from "@/components/shared/form-button";
+import ActionButton from "@/components/shared/action-button";
 import Logo from "@/assets/nodepop-react";
 import type { Credentials } from "./types";
 
@@ -78,8 +78,8 @@ function LoginForm({
           <Switch name="remember" value="remember" />
           Remember me next time
         </FormField>
-        <FormButton
-          disabled={!canSubmit}
+        <ActionButton
+          disabled={!canSubmit || submitting}
           loading={submitting}
           className="w-full"
         >
@@ -88,7 +88,7 @@ function LoginForm({
             : canSubmit
               ? "Log in to Nodepop"
               : "Enter your credentials"}
-        </FormButton>
+        </ActionButton>
       </form>
       <Toaster position="bottom-center" richColors />
     </div>

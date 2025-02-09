@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Header from "./header";
+import { Toaster } from "../ui/sonner";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {/* <footer className="grid h-16 place-content-center border-t shadow">
         @2025 Keepcoding
       </footer> */}
+      <Toaster position="bottom-center" richColors />
     </div>
   );
 }
