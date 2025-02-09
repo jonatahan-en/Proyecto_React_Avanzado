@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router";
-import AuthButton from "@auth/components/auth-button";
 import type { ReactNode } from "react";
+import AuthButton from "@/pages/auth/components/auth-button";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (

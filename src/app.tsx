@@ -1,10 +1,10 @@
 import { Navigate, Outlet, Route, Routes } from "react-router";
-import Layout from "@layout/layout";
-import LoginPage from "@auth/login-page";
-import RequireAuth from "@auth/components/require-auth";
-import AdvertsPage from "@adverts/adverts-page";
-import AdvertPage from "@adverts/advert-page";
-import NewAdvertPage from "@adverts/new-advert-page";
+import LoginPage from "./pages/auth/login-page";
+import RequireAuth from "./pages/auth/components/require-auth";
+import Layout from "./components/layout/layout";
+import AdvertsPage from "./pages/adverts/adverts-page";
+import AdvertPage from "./pages/adverts/advert-page";
+import NewAdvertPage from "./pages/adverts/new-advert-page";
 
 export default function App() {
   return (

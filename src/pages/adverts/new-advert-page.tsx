@@ -5,6 +5,8 @@ import { createAdvert } from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
 import AvailableTags from "./components/available-tags";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 function validatePrice(value: FormDataEntryValue | null): number {
   if (typeof value === "string") {
@@ -78,7 +80,7 @@ export default function NewAdvertPage() {
   const buttonDisabled = !name || !tags.length || isLoading;
 
   return (
-    <div className="bg-green-300">
+    <div>
       <h1>New Advert Page</h1>
       <form onSubmit={handleSubmit}>
         <label className="block">
@@ -106,9 +108,10 @@ export default function NewAdvertPage() {
           photo
           <input type="file" name="photo" />
         </label>
-        <button type="submit" disabled={buttonDisabled}>
-          Create advert
-        </button>
+        <Button type="submit" disabled={buttonDisabled} className="w-full">
+          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading ? "Please wait" : "Create advert"}
+        </Button>
       </form>
     </div>
   );

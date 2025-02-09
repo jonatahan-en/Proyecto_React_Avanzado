@@ -3,37 +3,31 @@ import { isAxiosError } from "axios";
 type ErrorCode =
   | "UNAUTHORIZED"
   | "NOT_FOUND"
+  | "FORBIDDEN"
   | "SERVER_ERROR"
   | "NETWORK_ERROR"
   | "API_CLIENT_ERROR";
 
 export class ApiClientError extends Error {
-  code: ErrorCode;
+  code: ErrorCode = "API_CLIENT_ERROR";
 
-  constructor(message: string, code: ErrorCode = "API_CLIENT_ERROR") {
-    super(message);
-    this.code = code;
+  constructor(error: unknown) {
+    super("Api Client Error");
+    if (error instanceof Error) {
+      this.normalizeError(error);
+    }
   }
-}
 
-export function isApiClientError(error: unknown): error is ApiClientError {
-  return error instanceof ApiClientError;
-}
-
-export function normalizeError(error: unknown): ApiClientError {
-  // Unknown Error
-  const apiClientError = new ApiClientError("Api Client Error");
-
-  if (error instanceof Error) {
+  private normalizeError(error: Error) {
     // Error instance
-    apiClientError.message = error.message;
+    this.message = error.message;
 
     if (isAxiosError<{ message: string; statusCode: number }>(error)) {
       // AxiosError instance
-      apiClientError.message =
+      this.message =
         error.response?.data.message ??
         error.response?.statusText ??
-        apiClientError.message;
+        this.message;
       const errorCode = error.code;
       const errorStatus =
         error.response?.data.statusCode ??
@@ -41,19 +35,23 @@ export function normalizeError(error: unknown): ApiClientError {
         error.status;
 
       if (errorCode === "ERR_NETWORK") {
-        apiClientError.code = "NETWORK_ERROR";
+        this.code = "NETWORK_ERROR";
       }
       if (typeof errorStatus === "number") {
         if (errorStatus === 401) {
-          apiClientError.code = "UNAUTHORIZED";
+          this.code = "UNAUTHORIZED";
+        } else if (errorStatus === 403) {
+          this.code = "FORBIDDEN";
         } else if (errorStatus === 404) {
-          apiClientError.code = "NOT_FOUND";
+          this.code = "NOT_FOUND";
         } else if (errorStatus >= 500) {
-          apiClientError.code = "SERVER_ERROR";
+          this.code = "SERVER_ERROR";
         }
       }
     }
   }
+}
 
-  return apiClientError;
+export function isApiClientError(error: unknown): error is ApiClientError {
+  return error instanceof ApiClientError;
 }

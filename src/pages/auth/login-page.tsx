@@ -2,11 +2,18 @@ import { type ChangeEvent, type FormEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "./context";
 import { login } from "./service";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { isApiClientError } from "@/api/error";
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { onLogin } = useAuth();
@@ -30,7 +37,11 @@ export default function LoginPage() {
       onLogin();
       navigate(location.state?.from ?? "/", { replace: true });
     } catch (error) {
-      setError(error as Error);
+      if (isApiClientError(error)) {
+        toast.error(error.message);
+      } else {
+        toast.error("");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -40,49 +51,48 @@ export default function LoginPage() {
   const buttonDisabled = !email || !password || isLoading;
 
   return (
-    <div>
-      <header>
-        <h1>Log in to Nodepop</h1>
-      </header>
-      <main>
-        <form onSubmit={handleSubmit}>
-          <label className="block">
-            email
-            <input
+    <div className="mx-auto h-dvh max-w-md">
+      <div className="px-6 pt-20">
+        <header className="mb-8 text-center">
+          <h1 className="text-3xl font-bold sm:text-4xl">Log in to Nodepop</h1>
+          <p className="text-muted-foreground mt-2 hidden sm:block">
+            Enter your credentials and enjoy nodepop!
+          </p>
+        </header>
+        <form className="grid gap-4" onSubmit={handleSubmit}>
+          <div className="grid w-full items-center gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
               type="email"
+              id="email"
               name="email"
+              placeholder="Email"
               value={email}
               onChange={handleChange}
             />
-          </label>
-          <label className="block">
-            password
-            <input
+          </div>
+          <div className="grid w-full items-center gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
               type="password"
+              id="password"
               name="password"
+              placeholder="Password"
               value={password}
               onChange={handleChange}
             />
-          </label>
-          <label className="block">
-            remember
-            <input type="checkbox" name="remember" value="remember" />
-          </label>
-          <button type="submit" disabled={buttonDisabled}>
-            Log in
-          </button>
-        </form>
-        {error && (
-          <div
-            onClick={() => {
-              setError(null);
-            }}
-            className="text-red-600"
-          >
-            {error.message}
           </div>
-        )}
-      </main>
+          <div className="text-muted-foreground has-checked:text-foreground flex items-center gap-2 py-2">
+            <Switch id="remember" name="remember" value="remember" />
+            <Label htmlFor="remember">Remember me next time</Label>
+          </div>
+          <Button type="submit" disabled={buttonDisabled} className="w-full">
+            {isLoading && <Loader2 className="animate-spin" />}
+            {isLoading ? "Please wait" : "Log in"}
+          </Button>
+        </form>
+        <Toaster position="bottom-center" richColors />
+      </div>
     </div>
   );
 }

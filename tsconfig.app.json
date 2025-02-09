@@ -24,17 +24,9 @@
     "noUncheckedSideEffectImports": true,
 
     // Path alias
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@api/*": ["./api/*"],
-      "@components/*": ["./components/*"],
-      "@layout/*": ["./components/layout/*"],
-      "@shared/*": ["./components/shared/*"],
-      "@pages/*": ["./pages/*"],
-      "@auth/*": ["./pages/auth/*"],
-      "@adverts/*": ["./pages/adverts/*"],
-      "@utils/*": ["./utils/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]

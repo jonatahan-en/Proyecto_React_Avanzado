@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getAdverts } from "./service";
-import type { Advert } from "./types";
 import { isApiClientError } from "@/api/error";
+import type { Advert } from "./types";
 
 export default function AdvertsPage() {
   const navigate = useNavigate();

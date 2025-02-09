@@ -1,12 +1,12 @@
 import axios from "axios";
-import { normalizeError } from "./error";
+import { ApiClientError } from "./error";
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 client.interceptors.response.use(undefined, (error) => {
-  return Promise.reject(normalizeError(error));
+  return Promise.reject(new ApiClientError(error));
 });
 
 export const setAuthorizationHeader = (accessToken: string) => {

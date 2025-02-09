@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { deleteAdvert, getAdvert } from "./service";
 import { isApiClientError } from "@/api/error";
-import ConfirmationButton from "@shared/confirmation-button";
+import ConfirmationButton from "@/components/shared/confirmation-button";
 import type { Advert } from "./types";
 
 export default function AdvertPage() {
@@ -79,7 +79,7 @@ export default function AdvertPage() {
           <span key={tag}>{tag}</span>
         ))}
         {advert.photo && <img alt={advert.name} src={advert.photo} />}
-        <ConfirmationButton onConfirm={handleDeleteClick}>
+        <ConfirmationButton variant="destructive" onConfirm={handleDeleteClick}>
           Delete
         </ConfirmationButton>
       </article>

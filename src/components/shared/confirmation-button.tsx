@@ -1,6 +1,8 @@
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
+import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-type ButtonProps = ComponentProps<"button">;
+type ButtonProps = ComponentProps<typeof Button>;
 
 type ConfirmationButtonProps = Omit<ButtonProps, "onClick"> & {
   onConfirm: () => void;
@@ -10,34 +12,23 @@ export default function ConfirmationButton({
   onConfirm,
   ...props
 }: ConfirmationButtonProps) {
-  const [show, setShow] = useState(false);
-
-  const showConfirmation = () => {
-    setShow(true);
-  };
-
-  const hideConfirmation = () => {
-    setShow(false);
-  };
-
   const handleConfirm = () => {
-    hideConfirmation();
     onConfirm();
   };
 
   return (
-    <>
-      <button onClick={showConfirmation} {...props} />;
-      {show && (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button {...props} />
+      </PopoverTrigger>
+      <PopoverContent>
         <div>
           <button name="ok" onClick={handleConfirm}>
             Ok
           </button>
-          <button name="cancel" onClick={hideConfirmation}>
-            Cancel
-          </button>
+          <button name="cancel">Cancel</button>
         </div>
-      )}
-    </>
+      </PopoverContent>
+    </Popover>
   );
 }
