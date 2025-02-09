@@ -1,33 +1,27 @@
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { type ComponentProps } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 type ButtonProps = ComponentProps<typeof Button>;
 
 type ConfirmationButtonProps = Omit<ButtonProps, "onClick"> & {
-  onConfirm: () => void;
+  confirmation: ReactNode;
+  actionButton: ReactNode;
 };
 
-export default function ConfirmationButton({
-  onConfirm,
+export default function PopoverButton({
+  confirmation,
+  actionButton,
   ...props
 }: ConfirmationButtonProps) {
-  const handleConfirm = () => {
-    onConfirm();
-  };
-
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button {...props} />
       </PopoverTrigger>
-      <PopoverContent>
-        <div>
-          <button name="ok" onClick={handleConfirm}>
-            Ok
-          </button>
-          <button name="cancel">Cancel</button>
-        </div>
+      <PopoverContent className="flex items-center gap-4">
+        {confirmation}
+        {actionButton}
       </PopoverContent>
     </Popover>
   );

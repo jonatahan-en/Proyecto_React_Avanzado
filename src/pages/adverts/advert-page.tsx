@@ -4,6 +4,8 @@ import { deleteAdvert, getAdvert } from "./service";
 import { isApiClientError } from "@/api/error";
 import ConfirmationButton from "@/components/shared/confirmation-button";
 import type { Advert } from "./types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function AdvertPage() {
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ export default function AdvertPage() {
     loadAdvert();
   }, [advertId, handleError]);
 
-  const handleDeleteClick = async () => {
+  const handleDelete = async () => {
     try {
       await deleteAdvert(advertId);
       navigate("/adverts");
@@ -69,20 +71,25 @@ export default function AdvertPage() {
   }
 
   return (
-    <div className="bg-blue-300">
-      <h1>Advert Page</h1>
-      <article>
-        <h3>{advert.name}</h3>
-        {advert.sale ? "for sale" : "buy"}
-        <strong>{advert.price}</strong>
-        {advert.tags.map((tag) => (
-          <span key={tag}>{tag}</span>
-        ))}
-        {advert.photo && <img alt={advert.name} src={advert.photo} />}
-        <ConfirmationButton variant="destructive" onConfirm={handleDeleteClick}>
-          Delete
-        </ConfirmationButton>
-      </article>
-    </div>
+    <article>
+      <h1>{advert.name}</h1>
+      {advert.sale ? "for sale" : "buy"}
+      <strong>{advert.price}</strong>
+      {advert.tags.map((tag) => (
+        <Badge key={tag}>{tag}</Badge>
+      ))}
+      {advert.photo && <img alt={advert.name} src={advert.photo} />}
+      <ConfirmationButton
+        variant="outline"
+        confirmation="Are you sure you want to delete this advert?"
+        actionButton={
+          <Button onClick={handleDelete} variant="destructive">
+            Yes
+          </Button>
+        }
+      >
+        Delete
+      </ConfirmationButton>
+    </article>
   );
 }
