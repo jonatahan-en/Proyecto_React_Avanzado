@@ -1,6 +1,6 @@
-import { type ComponentProps } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { type ComponentProps } from "react";
 
 type ButtonProps = ComponentProps<typeof Button>;
 
