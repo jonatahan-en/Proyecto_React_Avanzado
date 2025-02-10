@@ -15,7 +15,7 @@ const tagsClassNames: Record<string, string> = {
   work: "border-chart-4 text-chart-4 data-[state=on]:bg-chart-4 border-2 bg-white data-[state=on]:text-white",
 };
 
-export default function AvailableTags({
+export default function TagsSelector({
   onChange,
   className,
 }: {

@@ -4,14 +4,15 @@ import { isApiClientError } from "@/api/error";
 import { createAdvert } from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
-import AvailableTags from "./components/available-tags";
+import TagsSelector from "./components/tags-selector";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Euro, Loader2 } from "lucide-react";
 import FormField from "@/components/shared/form-field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import InputPhoto from "@/components/shared/input-photo";
 
 function validatePrice(value: FormDataEntryValue | null): number {
   try {
@@ -100,7 +101,7 @@ export default function NewAdvertPage() {
           />
         </FormField>
         <FormField>
-          For sale / Looking to buy
+          For sale or Looking to buy?
           <RadioGroup
             className="flex items-center p-2.5"
             name="sale"
@@ -117,19 +118,18 @@ export default function NewAdvertPage() {
           </RadioGroup>
         </FormField>
         <FormField className="w-[50%]">
-          Price
+          <span className="flex items-center gap-1">
+            Price <Euro className="stroke-primary" size={16} />
+          </span>
           <Input type="number" name="price" defaultValue={0} />
         </FormField>
         <FormField>
-          Tags
-          <AvailableTags
-            onChange={handleTagsChange}
-            className="justify-start"
-          />
+          Tags (at least one)
+          <TagsSelector onChange={handleTagsChange} className="justify-start" />
         </FormField>
-        <FormField>
-          Photo
-          <Input type="file" name="photo" />
+        <FormField className="w-[50%]">
+          Photo (click to upload)
+          <InputPhoto name="photo" />
         </FormField>
         <Button type="submit" disabled={buttonDisabled} className="w-full">
           {loading && <Loader2 className="animate-spin" />}

@@ -9,7 +9,7 @@ import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { toast } from "sonner";
 import ActionButton from "@/components/shared/action-button";
-import imagePlacehoder from "@/assets/image-placeholder.svg";
+import imagePlacehoder from "@/assets/placeholder.webp";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -46,7 +46,7 @@ const AdvertPhoto = ({
     <img
       alt={name}
       src={photo ?? imagePlacehoder}
-      className="h-full w-full rounded-md object-cover"
+      className="h-full w-full rounded-md object-contain"
     />
   </AspectRatio>
 );
