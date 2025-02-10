@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router";
 import AuthButton from "@/pages/auth/components/auth-button";
-import Logo from "@/assets/nodepop-react";
+import Logo from "@/components/shared/nodepop-react";
 import type { ComponentProps } from "react";
 
 function LogoLink() {

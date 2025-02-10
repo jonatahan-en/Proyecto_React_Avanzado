@@ -9,6 +9,7 @@ import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { toast } from "sonner";
 import ActionButton from "@/components/shared/action-button";
+import imagePlacehoder from "@/assets/image-placeholder.svg";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -42,19 +43,11 @@ const AdvertPhoto = ({
   name: string;
 }) => (
   <AspectRatio ratio={4 / 3} className="bg-muted grid w-full rounded-md p-4">
-    {photo ? (
-      <img
-        alt={name}
-        src={photo}
-        className="h-full w-full rounded-md object-cover"
-      />
-    ) : (
-      <div className="grid h-full w-full place-content-center">
-        <span className="text-muted-foreground text-center text-2xl font-extrabold sm:text-4xl">
-          Image not available
-        </span>
-      </div>
-    )}
+    <img
+      alt={name}
+      src={photo ?? imagePlacehoder}
+      className="h-full w-full rounded-md object-cover"
+    />
   </AspectRatio>
 );
 

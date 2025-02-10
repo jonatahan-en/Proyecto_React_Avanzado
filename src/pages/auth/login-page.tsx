@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { isApiClientError } from "@/api/error";
 import FormField from "@/components/shared/form-field";
 import ActionButton from "@/components/shared/action-button";
-import Logo from "@/assets/nodepop-react";
+import Logo from "@/components/shared/nodepop-react";
 import type { Credentials } from "./types";
 
 function LoginForm({
