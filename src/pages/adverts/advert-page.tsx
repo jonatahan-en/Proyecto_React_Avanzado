@@ -10,7 +10,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { toast } from "sonner";
 import ActionButton from "@/components/shared/action-button";
 
-const tagsColors: Record<string, string> = {
+const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
   mobile: "bg-chart-2",
   motor: "bg-chart-3",
@@ -28,7 +28,7 @@ const AdvertTags = ({ tags }: { tags: Tags }) => (
   <ul className="flex flex-wrap gap-1">
     {tags.map((tag) => (
       <li key={tag}>
-        <Badge className={tagsColors[tag]}>{tag}</Badge>
+        <Badge className={tagsClassNames[tag]}>{tag}</Badge>
       </li>
     ))}
   </ul>

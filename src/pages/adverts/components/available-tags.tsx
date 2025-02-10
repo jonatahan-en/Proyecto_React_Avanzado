@@ -1,18 +1,35 @@
-import { useEffect, useState, type ComponentProps } from "react";
-import type { Tags } from "../types";
+import { useEffect, useState } from "react";
 import { getTags } from "../service";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Tags } from "../types";
+import { Badge } from "@/components/ui/badge";
 
-type Props = ComponentProps<"select">;
+const tagsClassNames: Record<string, string> = {
+  lifestyle:
+    "border-chart-1 text-chart-1 data-[state=on]:bg-chart-1 border-2 bg-white data-[state=on]:text-white",
+  mobile:
+    "border-chart-2 text-chart-2 data-[state=on]:bg-chart-2 border-2 bg-white data-[state=on]:text-white",
+  motor:
+    "border-chart-3 text-chart-3 data-[state=on]:bg-chart-3 border-2 bg-white data-[state=on]:text-white",
+  work: "border-chart-4 text-chart-4 data-[state=on]:bg-chart-4 border-2 bg-white data-[state=on]:text-white",
+};
 
-export default function AvailableTags(props: Props) {
+export default function AvailableTags({
+  onChange,
+  className,
+}: {
+  onChange: (tags: Tags) => void;
+  className?: string;
+}) {
   const [tags, setTags] = useState<Tags | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     async function loadTags() {
       try {
-        setIsLoading(true);
+        setLoading(true);
         const tags = await getTags();
         setTags(tags);
       } catch (error) {
@@ -21,7 +38,7 @@ export default function AvailableTags(props: Props) {
         }
         // TODO: fire an error to be caught by ErrorBoundary
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     }
 
@@ -29,22 +46,25 @@ export default function AvailableTags(props: Props) {
   }, []);
 
   if (error) {
-    return (
-      <div>
-        Ooooops: <strong>{error.message}</strong>
-      </div>
-    );
+    return <Badge className="bg-destructive h-9">No tags available</Badge>;
   }
 
-  if (!tags || isLoading) {
-    return "Loading...";
+  if (!tags || loading) {
+    return <Skeleton className="h-9 w-[50%]" />;
   }
 
   return (
-    <select {...props}>
+    <ToggleGroup
+      type="multiple"
+      defaultValue={[]}
+      onValueChange={onChange}
+      className={className}
+    >
       {tags.map((tag) => (
-        <option key={tag}>{tag}</option>
+        <ToggleGroupItem key={tag} value={tag} className={tagsClassNames[tag]}>
+          {tag}
+        </ToggleGroupItem>
       ))}
-    </select>
+    </ToggleGroup>
   );
 }

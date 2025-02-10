@@ -14,19 +14,19 @@ const SVGComponent = (props: SVGProps<SVGSVGElement>) => (
       height="140"
       rx="20"
       stroke="currentColor"
-      stroke-width="8"
+      strokeWidth="8"
       fill="none"
     />
     <path
       d="M55 40 Q100 0 145 40"
       stroke="currentColor"
-      stroke-width="8"
+      strokeWidth="8"
       fill="none"
     />
     <g
       transform="translate(100, 110) scale(1.6)"
       stroke="currentColor"
-      stroke-width="5"
+      strokeWidth="5"
     >
       <circle cx="0" cy="0" r="5" fill="currentColor" />
       <ellipse rx="30" ry="12" transform="rotate(0)" fill="none" />

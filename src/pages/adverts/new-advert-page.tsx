@@ -7,12 +7,19 @@ import type { Tags } from "./types";
 import AvailableTags from "./components/available-tags";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import FormField from "@/components/shared/form-field";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 function validatePrice(value: FormDataEntryValue | null): number {
-  if (typeof value === "string") {
+  try {
     return Number(value);
+  } catch (error) {
+    console.error(error);
+    return 0;
   }
-  return 0;
 }
 
 function validatePhoto(value: FormDataEntryValue | null): File | undefined {
@@ -26,15 +33,14 @@ export default function NewAdvertPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [tags, setTags] = useState<Tags>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
 
-  const handleTagsChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setTags([...event.target.selectedOptions].map((option) => option.value));
+  const handleTagsChange = (tags: Tags) => {
+    setTags(tags);
   };
 
   const handleError = useCallback(
@@ -45,9 +51,9 @@ export default function NewAdvertPage() {
         }
       }
       if (error instanceof Error) {
-        setError(error);
+        return toast.error(error.message);
       }
-      // TODO: fire an error to be caught by ErrorBoundary
+      toast.error("Unexpected error");
     },
     [navigate],
   );
@@ -56,12 +62,12 @@ export default function NewAdvertPage() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const sale = !!formData.get("sale");
+    const sale = formData.get("sale") === "sale";
     const price = validatePrice(formData.get("price"));
     const photo = validatePhoto(formData.get("photo"));
 
     try {
-      setIsLoading(true);
+      setLoading(true);
       const createdAdvert = await createAdvert({
         name,
         sale,
@@ -73,44 +79,61 @@ export default function NewAdvertPage() {
     } catch (error) {
       handleError(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const buttonDisabled = !name || !tags.length || isLoading;
+  const buttonDisabled = !name || !tags.length || loading;
 
   return (
-    <div>
-      <h1>New Advert Page</h1>
-      <form onSubmit={handleSubmit}>
-        <label className="block">
-          name
-          <input
+    <div className="grid gap-4">
+      <h2 className="text-center text-3xl">Create your advert</h2>
+      <form className="grid gap-4" onSubmit={handleSubmit}>
+        <FormField>
+          Name
+          <Input
             type="text"
             name="name"
+            placeholder="Name"
             value={name}
             onChange={handleNameChange}
           />
-        </label>
-        <label className="block">
-          sale
-          <input type="checkbox" name="sale" />
-        </label>
-        <label className="block">
-          price
-          <input type="number" name="price" defaultValue={0} />
-        </label>
-        <label className="block">
-          tags
-          <AvailableTags name="tags" onChange={handleTagsChange} multiple />
-        </label>
-        <label className="block">
-          photo
-          <input type="file" name="photo" />
-        </label>
+        </FormField>
+        <FormField>
+          For sale / Looking to buy
+          <RadioGroup
+            className="flex items-center p-2.5"
+            name="sale"
+            defaultValue="sale"
+          >
+            <Label className="flex items-center gap-2">
+              <RadioGroupItem value="sale" />
+              For sale
+            </Label>
+            <Label className="flex items-center gap-2">
+              <RadioGroupItem value="buy" />
+              Looking to buy
+            </Label>
+          </RadioGroup>
+        </FormField>
+        <FormField className="w-[50%]">
+          Price
+          <Input type="number" name="price" defaultValue={0} />
+        </FormField>
+        <FormField>
+          Tags
+          <AvailableTags
+            onChange={handleTagsChange}
+            className="justify-start"
+          />
+        </FormField>
+        <FormField>
+          Photo
+          <Input type="file" name="photo" />
+        </FormField>
         <Button type="submit" disabled={buttonDisabled} className="w-full">
-          {isLoading && <Loader2 className="animate-spin" />}
-          {isLoading ? "Please wait" : "Create advert"}
+          {loading && <Loader2 className="animate-spin" />}
+          {loading ? "Please wait" : "Create advert"}
         </Button>
       </form>
     </div>
