@@ -15,3 +15,9 @@ export type CreateAdvertDto = Pick<
 > & {
   photo?: File;
 };
+
+type FiltersRequired = Pick<Advert, "name" | "sale" | "tags"> & {
+  price: [number, number];
+};
+
+export type Filters = Partial<FiltersRequired>;

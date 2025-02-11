@@ -98,6 +98,7 @@ export default function NewAdvertPage() {
             placeholder="Name"
             value={name}
             onChange={handleNameChange}
+            autoComplete="off"
           />
         </FormField>
         <FormField>

@@ -62,6 +62,7 @@ function LoginForm({
             placeholder="Email"
             value={email}
             onChange={handleChange}
+            autoComplete="off"
           />
         </FormField>
         <FormField>
@@ -72,6 +73,7 @@ function LoginForm({
             placeholder="Password"
             value={password}
             onChange={handleChange}
+            autoComplete="off"
           />
         </FormField>
         <FormField className="flex py-2">

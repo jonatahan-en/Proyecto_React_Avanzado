@@ -2,13 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getAdverts } from "./service";
 import { isApiClientError } from "@/api/error";
-import type { Advert } from "./types";
+import { filterAdverts } from "./filters";
+import FiltersInputs from "./components/filters-inputs";
+import type { Advert, Filters } from "./types";
 
 export default function AdvertsPage() {
   const navigate = useNavigate();
   const [adverts, setAdverts] = useState<Advert[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [filters, setFilters] = useState<Filters | null>(null);
 
   const handleError = useCallback(
     (error: unknown) => {
@@ -56,11 +59,21 @@ export default function AdvertsPage() {
     return <Link to="new">Create first advert</Link>;
   }
 
+  const prices = adverts.map((advert) => advert.price);
+  const filteredAdverts = filterAdverts(adverts, filters);
+
   return (
-    <div className="bg-amber-300">
+    <div>
+      <FiltersInputs
+        pricesRange={[Math.min(...prices), Math.max(...prices)]}
+        onChange={(filters) => {
+          console.log(JSON.stringify(filters));
+          setFilters(filters);
+        }}
+      />
       <h1>Adverts Page</h1>
-      <ul>
-        {adverts.map((advert) => (
+      <ul className="bg-amber-400">
+        {filteredAdverts.map((advert) => (
           <li key={advert.id} className="border">
             <Link to={advert.id}>
               <h3>{advert.name}</h3>
