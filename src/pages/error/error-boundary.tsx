@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Link } from "react-router";
 
 interface Props {
   children: ReactNode;
@@ -27,19 +26,19 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-          <div className="max-w-md rounded-lg bg-white p-8 text-center shadow-xl">
-            <h1 className="mb-4 text-6xl font-bold text-red-500">Oops!</h1>
+        <div className="bg-muted flex min-h-screen items-center justify-center">
+          <div className="bg-background max-w-md rounded-lg p-8 text-center shadow-xl">
+            <h1 className="text-destructive mb-4 text-6xl font-bold">Oops!</h1>
             <div className="mb-8">
-              <div className="mx-auto my-4 h-1 w-16 bg-red-500"></div>
-              <h2 className="mb-4 text-2xl font-semibold text-gray-700">
+              <div className="bg-destructive mx-auto my-4 h-1 w-16"></div>
+              <h2 className="text-accent-foreground mb-4 text-2xl font-semibold">
                 Something went wrong
               </h2>
-              <p className="mb-4 text-gray-600">
+              <p className="text-muted-foreground mb-4">
                 An unexpected error has occurred. Our team has been notified.
               </p>
               {this.state.error && (
-                <p className="mb-4 rounded-lg bg-gray-50 p-4 text-sm text-gray-500">
+                <p className="text-muted-foreground bg-muted mb-4 rounded-lg p-4 text-sm">
                   {this.state.error.message}
                 </p>
               )}

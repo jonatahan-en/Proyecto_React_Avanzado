@@ -11,7 +11,6 @@ import FormField from "@/components/shared/form-field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import InputPhoto from "@/components/shared/input-photo";
 
 function validatePrice(value: FormDataEntryValue | null): number {
@@ -35,6 +34,7 @@ export default function NewAdvertPage() {
   const [name, setName] = useState("");
   const [tags, setTags] = useState<Tags>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -43,21 +43,6 @@ export default function NewAdvertPage() {
   const handleTagsChange = (tags: Tags) => {
     setTags(tags);
   };
-
-  const handleError = useCallback(
-    (error: unknown) => {
-      if (isApiClientError(error)) {
-        if (error.code === "UNAUTHORIZED") {
-          return navigate("/login");
-        }
-      }
-      if (error instanceof Error) {
-        return toast.error(error.message);
-      }
-      toast.error("Unexpected error");
-    },
-    [navigate],
-  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,7 +63,14 @@ export default function NewAdvertPage() {
       });
       navigate(`/adverts/${createdAdvert.id}`);
     } catch (error) {
-      handleError(error);
+      if (isApiClientError(error)) {
+        if (error.code === "UNAUTHORIZED") {
+          return navigate("/login");
+        }
+      }
+      setError(() => {
+        throw error;
+      });
     } finally {
       setLoading(false);
     }
@@ -131,10 +123,12 @@ export default function NewAdvertPage() {
           Tags (at least one)
           <TagsSelector onChange={handleTagsChange} className="justify-start" />
         </FormField>
-        <FormField className="w-[50%]">
-          Photo (click to upload)
-          <InputPhoto name="photo" />
-        </FormField>
+        <div className="sm:col-span-2 sm:mx-auto">
+          <FormField>
+            Photo (click to upload)
+            <InputPhoto name="photo" />
+          </FormField>
+        </div>
         <Button
           type="submit"
           disabled={buttonDisabled}

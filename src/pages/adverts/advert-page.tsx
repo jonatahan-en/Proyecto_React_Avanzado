@@ -7,7 +7,6 @@ import type { Advert, Tags } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { toast } from "sonner";
 import ActionButton from "@/components/shared/action-button";
 import imagePlacehoder from "@/assets/placeholder.webp";
 
@@ -56,6 +55,7 @@ export default function AdvertPage() {
   const params = useParams();
   const [advert, setAdvert] = useState<Advert | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   const advertId = params.advertId ?? "";
@@ -70,10 +70,9 @@ export default function AdvertPage() {
           return navigate("/404");
         }
       }
-      if (error instanceof Error) {
-        return toast.error(error.message);
-      }
-      toast.error("Unexpected error");
+      setError(() => {
+        throw error;
+      });
     },
     [navigate],
   );

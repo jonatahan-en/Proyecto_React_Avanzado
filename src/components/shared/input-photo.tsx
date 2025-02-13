@@ -5,10 +5,8 @@ import {
   type ComponentProps,
   type MouseEvent,
 } from "react";
-
 import imagePlaceHolder from "@/assets/placeholder.webp";
 import { Input } from "../ui/input";
-import { AspectRatio } from "../ui/aspect-ratio";
 
 type InputPhotoProps = ComponentProps<typeof Input>;
 
