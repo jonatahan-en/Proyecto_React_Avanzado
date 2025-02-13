@@ -5,7 +5,7 @@ import type { Filters, Tags } from "../types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import TagsSelector from "./tags-selector";
-import { Slider } from "@/components/ui/slider";
+import PriceRange from "./price-range";
 
 export default function FiltersInputs({
   onChange,
@@ -80,12 +80,10 @@ export default function FiltersInputs({
         </RadioGroup>
       </FormField>
       <FormField>
-        Price range
-        <Slider
+        <PriceRange
           className="py-3"
           min={pricesRange[0]}
           max={pricesRange[1]}
-          defaultValue={pricesRange}
           onValueChange={handlePriceChange}
         />
       </FormField>
