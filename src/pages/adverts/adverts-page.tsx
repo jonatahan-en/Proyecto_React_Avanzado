@@ -49,7 +49,7 @@ export default function AdvertsPage() {
   const navigate = useNavigate();
   const [adverts, setAdverts] = useState<Advert[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<null>(null);
+  const [, setError] = useState<null>(null);
   const [filters, setFilters] = useState<Filters | null>(null);
 
   useEffect(() => {

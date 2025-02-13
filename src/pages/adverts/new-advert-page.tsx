@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isApiClientError } from "@/api/error";
 import { createAdvert } from "./service";
@@ -34,7 +34,7 @@ export default function NewAdvertPage() {
   const [name, setName] = useState("");
   const [tags, setTags] = useState<Tags>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);

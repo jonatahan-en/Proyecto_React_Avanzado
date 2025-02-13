@@ -55,7 +55,7 @@ export default function AdvertPage() {
   const params = useParams();
   const [advert, setAdvert] = useState<Advert | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   const advertId = params.advertId ?? "";
