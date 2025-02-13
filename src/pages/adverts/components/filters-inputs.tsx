@@ -49,7 +49,7 @@ export default function FiltersInputs({
 
   return (
     <div className="grid gap-4">
-      <FormField>
+      <FormField className="sm:max-w-[75%] md:max-w-[50%]">
         Name
         <Input
           type="text"
@@ -61,14 +61,10 @@ export default function FiltersInputs({
       <FormField>
         For sale or Looking to buy?
         <RadioGroup
-          className="flex items-center p-2.5"
+          className="flex items-center py-2.5"
           defaultValue="all"
           onValueChange={handleSaleChange}
         >
-          <Label className="flex items-center gap-2">
-            <RadioGroupItem value="all" />
-            All
-          </Label>
           <Label className="flex items-center gap-2">
             <RadioGroupItem value="sale" />
             For sale
@@ -77,9 +73,13 @@ export default function FiltersInputs({
             <RadioGroupItem value="buy" />
             Looking to buy
           </Label>
+          <Label className="flex items-center gap-2">
+            <RadioGroupItem value="all" />
+            All
+          </Label>
         </RadioGroup>
       </FormField>
-      <FormField>
+      <FormField className="sm:max-w-[75%] md:max-w-[50%]">
         Price range
         <Slider
           className="py-3"

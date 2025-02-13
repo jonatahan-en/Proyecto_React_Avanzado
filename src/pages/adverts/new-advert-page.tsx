@@ -90,7 +90,7 @@ export default function NewAdvertPage() {
     <div className="grid gap-4">
       <h2 className="text-center text-3xl">Create your advert</h2>
       <form className="grid gap-4" onSubmit={handleSubmit}>
-        <FormField>
+        <FormField className="sm:max-w-[75%] md:max-w-[50%]">
           Name
           <Input
             type="text"
@@ -118,7 +118,7 @@ export default function NewAdvertPage() {
             </Label>
           </RadioGroup>
         </FormField>
-        <FormField className="w-[50%]">
+        <FormField className="sm:max-w-[75%] md:max-w-[50%]">
           <span className="flex items-center gap-1">
             Price <Euro className="stroke-primary" size={16} />
           </span>

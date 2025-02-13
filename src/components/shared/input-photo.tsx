@@ -41,7 +41,7 @@ export default function InputPhoto({ onChange, ...props }: InputPhotoProps) {
   };
 
   return (
-    <div className="bg-muted">
+    <div className="bg-muted h-[150px] w-[200px] overflow-hidden">
       <Input
         ref={inputRef}
         type="file"
@@ -49,14 +49,12 @@ export default function InputPhoto({ onChange, ...props }: InputPhotoProps) {
         className="hidden"
         {...props}
       />
-      <AspectRatio ratio={4 / 3}>
-        <img
-          onClick={handleClick}
-          src={typeof src === "string" ? src : imagePlaceHolder}
-          alt=""
-          className="h-full object-contain"
-        />
-      </AspectRatio>
+      <img
+        onClick={handleClick}
+        src={typeof src === "string" ? src : imagePlaceHolder}
+        alt=""
+        className="mx-auto block h-full max-w-full object-contain"
+      />
     </div>
   );
 }
