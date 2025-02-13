@@ -48,8 +48,8 @@ export default function FiltersInputs({
   };
 
   return (
-    <div className="grid gap-4">
-      <FormField className="sm:max-w-[75%] md:max-w-[50%]">
+    <div className="grid gap-4 gap-x-6 border-b pb-4 sm:grid-cols-2">
+      <FormField>
         Name
         <Input
           type="text"
@@ -79,7 +79,7 @@ export default function FiltersInputs({
           </Label>
         </RadioGroup>
       </FormField>
-      <FormField className="sm:max-w-[75%] md:max-w-[50%]">
+      <FormField>
         Price range
         <Slider
           className="py-3"

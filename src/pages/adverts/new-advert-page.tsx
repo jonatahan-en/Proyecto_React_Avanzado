@@ -89,8 +89,11 @@ export default function NewAdvertPage() {
   return (
     <div className="grid gap-4">
       <h2 className="text-center text-3xl">Create your advert</h2>
-      <form className="grid gap-4" onSubmit={handleSubmit}>
-        <FormField className="sm:max-w-[75%] md:max-w-[50%]">
+      <form
+        className="grid gap-4 gap-x-6 sm:grid-cols-2"
+        onSubmit={handleSubmit}
+      >
+        <FormField>
           Name
           <Input
             type="text"
@@ -118,7 +121,7 @@ export default function NewAdvertPage() {
             </Label>
           </RadioGroup>
         </FormField>
-        <FormField className="sm:max-w-[75%] md:max-w-[50%]">
+        <FormField>
           <span className="flex items-center gap-1">
             Price <Euro className="stroke-primary" size={16} />
           </span>
@@ -132,7 +135,11 @@ export default function NewAdvertPage() {
           Photo (click to upload)
           <InputPhoto name="photo" />
         </FormField>
-        <Button type="submit" disabled={buttonDisabled} className="w-full">
+        <Button
+          type="submit"
+          disabled={buttonDisabled}
+          className="w-full sm:col-span-2"
+        >
           {loading && <Loader2 className="animate-spin" />}
           {loading ? "Please wait" : "Create advert"}
         </Button>
