@@ -5,6 +5,7 @@ import Layout from "./components/layout/layout";
 import AdvertsPage from "./pages/adverts/adverts-page";
 import AdvertPage from "./pages/adverts/advert-page";
 import NewAdvertPage from "./pages/adverts/new-advert-page";
+import NotFoundPage from "./pages/error/not-found-page";
 
 export default function App() {
   return (
@@ -25,7 +26,7 @@ export default function App() {
         <Route path=":advertId" element={<AdvertPage />}></Route>
         <Route path="new" element={<NewAdvertPage />}></Route>
       </Route>
-      <Route path="/404" element={<h1>404</h1>} />
+      <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<Navigate to="/404" />} />
     </Routes>
   );
