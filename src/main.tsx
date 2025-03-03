@@ -8,6 +8,8 @@ import { AuthProvider } from "./pages/auth/context";
 import App from "./app";
 import { ErrorBoundary } from "./pages/error/error-boundary";
 
+import "./store";
+
 const accessToken = storage.get("auth");
 if (accessToken) {
   setAuthorizationHeader(accessToken);
