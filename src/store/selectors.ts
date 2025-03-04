@@ -6,3 +6,6 @@ export const getAdvertsSelector = (state: RootState) => state.adverts;
 
 export const getAdvertSelector = (advertId?: string) => (state: RootState ) =>
     state.adverts.find((advert) => advert.id === advertId);
+
+
+export const getUiSelector = (state: RootState) => state.ui;
