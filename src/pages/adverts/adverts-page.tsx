@@ -4,10 +4,14 @@ import { Euro, SearchX } from "lucide-react";
 import { isApiClientError } from "@/api/error";
 import { Button } from "@/components/ui/button";
 import { getAdverts } from "./service";
+import { getAdvertsSelector } from  "../../store/selectors";
 import { filterAdverts } from "./filters";
 import FiltersInputs from "./components/filters-inputs";
 import { AdvertCard } from "./components/advert-card";
-import type { Advert, Filters } from "./types";
+import type {  Filters } from "./types";
+import { useDispatch } from "react-redux";
+import { advertsLoaded } from "@/store/actions";
+import { useAppSelector } from "@/store";
 
 function NoAdverts() {
   return (
@@ -47,7 +51,8 @@ function NoMatches() {
 
 export default function AdvertsPage() {
   const navigate = useNavigate();
-  const [adverts, setAdverts] = useState<Advert[] | null>(null);
+  const adverts = useAppSelector(getAdvertsSelector);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [, setError] = useState<null>(null);
   const [filters, setFilters] = useState<Filters | null>(null);
@@ -57,7 +62,7 @@ export default function AdvertsPage() {
       try {
         setIsLoading(true);
         const adverts = await getAdverts();
-        setAdverts(adverts);
+        dispatch(advertsLoaded(adverts));
       } catch (error) {
         if (isApiClientError(error)) {
           if (error.code === "UNAUTHORIZED") {
@@ -72,7 +77,7 @@ export default function AdvertsPage() {
       }
     }
     loadAdverts();
-  }, [navigate]);
+  }, [dispatch,navigate]);
 
   if (!adverts || isLoading) {
     return "Loading....";
