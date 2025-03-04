@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isApiClientError } from "@/api/error";
-import { createAdvert } from "./service";
+import { createAdvert} from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
 import TagsSelector from "./components/tags-selector";
@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import InputPhoto from "@/components/shared/input-photo";
+import { useAppDispatch } from "@/store";
+import { advertCreated } from "@/store/actions";
 
 function validatePrice(value: FormDataEntryValue | null): number {
   try {
@@ -35,6 +37,7 @@ export default function NewAdvertPage() {
   const [tags, setTags] = useState<Tags>([]);
   const [loading, setLoading] = useState(false);
   const [, setError] = useState(null);
+  const dispatch = useAppDispatch();
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -61,6 +64,7 @@ export default function NewAdvertPage() {
         tags,
         photo,
       });
+      dispatch(advertCreated(createdAdvert));
       navigate(`/adverts/${createdAdvert.id}`);
     } catch (error) {
       if (isApiClientError(error)) {
