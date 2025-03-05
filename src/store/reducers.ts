@@ -4,7 +4,7 @@ import type { Actions } from "./actions";
 
 export type State = {
     auth: boolean;
-    adverts: Advert[] | null;
+    adverts: { data: Advert[] | null, loaded: boolean };
     ui: {
         pending: boolean;
         error: Error | null;
@@ -13,7 +13,7 @@ export type State = {
 
 const defaultState: State = {
     auth: false,
-    adverts: null,
+    adverts:{ data: null, loaded: false },
     ui: {
         pending: false,
         error: null,
@@ -36,7 +36,7 @@ export function adverts(state = defaultState.adverts,action: Actions):State["adv
         case "adverts/loaded/fulfilled":
             return action.payload;
         case "adverts/created/fulfilled":
-            return [...(state ?? []), action.payload];
+            return { ...state, data:[ ... (state.data ?? []), action.payload] };
         default:
             return state;
     }

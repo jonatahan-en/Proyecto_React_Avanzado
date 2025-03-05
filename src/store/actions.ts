@@ -4,6 +4,7 @@ import { isApiClientError } from "@/api/error";
 import { login } from "@/pages/auth/service";
 import type { AppThunk } from ".";
 import { createAdvert, getAdvert, getAdverts } from "@/pages/adverts/service";
+import { getAdvertSelector } from "./selectors";
 
 
 type AuthLoginPending = {
@@ -27,12 +28,25 @@ type AdvertsLoadedPending = {
 };
 type AdvertsLoadedFulfilled = {
     type: "adverts/loaded/fulfilled";
-    payload: Advert[];
+    payload: { data: Advert[], loaded: boolean };
 };
 type AdvertsLoadedRejected = {
     type: "adverts/loaded/rejected";
     payload: Error;
 }
+
+// type AdvertLoadedPending = {
+//     type: "adverts/loaded/pending";
+// };
+// type AdvertLoadedFulfilled = {
+//     type: "adverts/loaded/fulfilled";
+//     payload: Advert[];
+// };
+// type AdvertLoadedRejected = {
+//     type: "adverts/loaded/rejected";
+//     payload: Error;
+// }
+
 
 type AdvertsCreatedPending = {
     type: "adverts/created/pending";
@@ -45,6 +59,8 @@ type AdvertsCreatedRejected = {
     type: "adverts/created/rejected";
     payload: Error;
 };
+
+
 type uiResetError = {
     type: "ui/reset-error";
 }
@@ -68,7 +84,7 @@ export  function authLogin(
         dispatch(authLoginPending())
         try {
             await login(credentials, true);
-            dispatch(authLoginFulfilled()); 
+            dispatch(authLoginFulfilled());
         } catch (error) {
             if(isApiClientError(error)){
                 dispatch(authLoginRejected(error));
@@ -77,18 +93,23 @@ export  function authLogin(
     };
 }
 
-export const authLogout = (): AuthLogout => ({
+export const authLogout = (): AuthLogout => {
+    return {
     type: "auth/logout",
-});
+    }
+};
 
 
 
 export const advertsLoadedPending = (): AdvertsLoadedPending => ({
     type: "adverts/loaded/pending",
 });
-export const advertsLoadedFulfilled = (adverts: Advert[]): AdvertsLoadedFulfilled => ({
+export const advertsLoadedFulfilled = (
+    adverts: Advert[], 
+    loaded?: boolean
+): AdvertsLoadedFulfilled => ({
     type: "adverts/loaded/fulfilled",
-    payload: adverts,
+    payload: { data: adverts, loaded: !! loaded },
 });
 export const advertsLoadedRejected = (error:Error): AdvertsLoadedRejected => ({
     type: "adverts/loaded/rejected",
@@ -98,13 +119,13 @@ export const advertsLoadedRejected = (error:Error): AdvertsLoadedRejected => ({
 export function  advertsLoaded(): AppThunk<Promise<void>> { 
         return async function(dispatch, getState){
             const state = getState();
-            if(state.adverts){
+            if(state.adverts.loaded){
                 return;
             }
             dispatch(advertsLoadedPending());
             try {
                 const adverts = await getAdverts();
-                dispatch(advertsLoadedFulfilled(adverts));
+                dispatch(advertsLoadedFulfilled(adverts, true));
                 
             } catch (error) {
                 if(isApiClientError(error)){
@@ -113,6 +134,38 @@ export function  advertsLoaded(): AppThunk<Promise<void>> {
         }
     }
 }
+
+// export const advertLoadedPending = (): AdvertLoadedPending => ({
+//     type: "adverts/loaded/pending",
+// });
+// export const advertLoadedFulfilled = (adverts: Advert[]): AdvertLoadedFulfilled => ({
+//     type: "adverts/loaded/fulfilled",
+//     payload: adverts,
+// });
+// export const advertLoadedRejected = (error:Error): AdvertLoadedRejected => ({
+//     type: "adverts/loaded/rejected",
+//     payload: error,
+// });
+
+export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> { 
+    return async function(dispatch, getState){
+        const state = getState();
+        if(getAdvertSelector(advertId)(state)){
+            return;
+        }
+        dispatch(advertsLoadedPending());
+        try {
+            const advert= await getAdvert(advertId);
+            dispatch(advertsLoadedFulfilled([advert]));
+            
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(advertsLoadedRejected(error));
+        }
+    }
+}
+}
+
 
 export const advertCreatedpending = (): AdvertsCreatedPending  => ({
     type: "adverts/created/pending",

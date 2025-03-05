@@ -1,6 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-//import { deleteAdvert, getAdvert } from "./service";
 import { isApiClientError } from "@/api/error";
 import ConfirmationButton from "@/components/shared/confirmation-button";
 import type { Tags } from "./types";
@@ -9,9 +8,11 @@ import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import ActionButton from "@/components/shared/action-button";
 import imagePlacehoder from "@/assets/placeholder.webp";
-import {  useAppSelector} from "@/store";
+import {  useAppDispatch, useAppSelector} from "@/store";
 import { getAdvertSelector } from "@/store/selectors";
 import { deleteAdvert} from "./service";
+import { advertLoadedDetail } from "@/store/actions";
+
 
 const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -61,6 +62,7 @@ export default function AdvertPage() {
   //const [loading, setLoading] = useState(false);
   const [, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const dispatch = useAppDispatch();
 
   const advertId = params.advertId ?? "";
 
@@ -81,25 +83,28 @@ export default function AdvertPage() {
     [navigate],
   );
 
-  // useEffect(() => {
-  //   async function loadAdvert() {
-  //     try {
-  //       setLoading(true);
-  //       const advert = await getAdvert(advertId);
-  //       setAdvert(advert);
-  //     } catch (error) {
-  //       handleError(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-  //   loadAdvert();
-  // }, [advertId, handleError]);
+  useEffect(() => {
+    //async function loadAdvert() {
+      //try {
+        //setLoading(true);
+        if(advertId){
+      dispatch(advertLoadedDetail(advertId))
+
+    //     setAdvert(advert);
+    //   } catch (error) {
+    //     handleError(error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // }
+    // loadAdvert();
+        }
+  }, [dispatch, advertId]);
 
   const handleDelete = async () => {
     try {
       setDeleting(true);
-      await deleteAdvert(advertId);
+      await deleteAdvert(advertId );
       navigate("/adverts");
     } catch (error) {
       handleError(error);

@@ -8,7 +8,6 @@ import { getIsLogged } from "@/store/selectors";
 
 function LogoutButton() {
   const dispatch = useAppDispatch();
-  //const { onLogout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -32,7 +31,6 @@ function LogoutButton() {
 
 export default function AuthButton() {;
   const isLogged = useAppSelector(getIsLogged);
-  //const { isLogged } = useAuth();
 
   if (isLogged) {
     return <LogoutButton />;
