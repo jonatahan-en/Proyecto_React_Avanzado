@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isApiClientError } from "@/api/error";
-import { createAdvert} from "./service";
+import {  getAdvert} from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
 import TagsSelector from "./components/tags-selector";
@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import InputPhoto from "@/components/shared/input-photo";
 import { useAppDispatch } from "@/store";
-import { advertCreated } from "@/store/actions";
+import { advertCreatedFulfilled, advertsCreate } from "@/store/actions";
 
 function validatePrice(value: FormDataEntryValue | null): number {
   try {
@@ -57,14 +57,15 @@ export default function NewAdvertPage() {
 
     try {
       setLoading(true);
-      const createdAdvert = await createAdvert({
+      const createdAdvert = await dispatch(advertsCreate({
         name,
         sale,
         price,
         tags,
         photo,
-      });
-      dispatch(advertCreated(createdAdvert));
+      }));
+      const advert = await getAdvert(createdAdvert.id);
+      dispatch(advertCreatedFulfilled(advert));
       navigate(`/adverts/${createdAdvert.id}`);
     } catch (error) {
       if (isApiClientError(error)) {

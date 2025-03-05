@@ -1,9 +1,9 @@
 import type { Credentials } from "@/pages/auth/types";
-import type { Advert } from "../pages/adverts/types";
+import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
 import { login } from "@/pages/auth/service";
 import type { AppThunk } from ".";
-import { getAdverts } from "@/pages/adverts/service";
+import { createAdvert, getAdvert, getAdverts } from "@/pages/adverts/service";
 
 
 type AuthLoginPending = {
@@ -34,9 +34,16 @@ type AdvertsLoadedRejected = {
     payload: Error;
 }
 
-type advertsCreated = {
-    type: "adverts/created";
+type AdvertsCreatedPending = {
+    type: "adverts/created/pending";
+};
+type AdvertsCreatedFulfilled = {
+    type: "adverts/created/fulfilled";
     payload: Advert;
+};
+type AdvertsCreatedRejected = {
+    type: "adverts/created/rejected";
+    payload: Error;
 };
 type uiResetError = {
     type: "ui/reset-error";
@@ -107,10 +114,39 @@ export function  advertsLoaded(): AppThunk<Promise<void>> {
     }
 }
 
-export const advertCreated = (advert: Advert): advertsCreated => ({
-    type: "adverts/created",
+export const advertCreatedpending = (): AdvertsCreatedPending  => ({
+    type: "adverts/created/pending",
+    
+});
+export const advertCreatedFulfilled = (advert: Advert): AdvertsCreatedFulfilled => ({
+    type: "adverts/created/fulfilled",
     payload: advert,
 });
+export const advertCreatedRejected = (error:Error): AdvertsCreatedRejected => ({
+    type: "adverts/created/rejected",
+    payload: error,
+})
+
+export function advertsCreate(
+    advertDto: CreateAdvertDto,
+): AppThunk<Promise<Advert>> {
+    return async function(dispatch) {
+        dispatch(advertCreatedpending());
+        try {
+        const createdAdvert = await createAdvert(advertDto);
+        const advert = await getAdvert(createdAdvert.id);
+        dispatch(advertCreatedFulfilled(advert));
+        return advert;
+                
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(advertCreatedRejected(error));
+            }
+            throw error;
+            
+        }
+    }
+}
 
 export const uiResetError = (): uiResetError => ({
     type: "ui/reset-error",
@@ -125,5 +161,7 @@ export type Actions =
 | AdvertsLoadedPending
 | AdvertsLoadedFulfilled
 | AdvertsLoadedRejected 
-| advertsCreated
+| AdvertsCreatedPending
+| AdvertsCreatedFulfilled
+| AdvertsCreatedRejected
 | uiResetError;

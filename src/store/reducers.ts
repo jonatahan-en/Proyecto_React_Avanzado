@@ -35,7 +35,7 @@ export function adverts(state = defaultState.adverts,action: Actions):State["adv
     switch (action.type) {
         case "adverts/loaded/fulfilled":
             return action.payload;
-        case "adverts/created":
+        case "adverts/created/fulfilled":
             return [...(state ?? []), action.payload];
         default:
             return state;
