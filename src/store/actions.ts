@@ -3,6 +3,7 @@ import type { Advert } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
 import { login } from "@/pages/auth/service";
 import type { AppThunk } from ".";
+import { getAdverts } from "@/pages/adverts/service";
 
 
 type AuthLoginPending = {
@@ -21,10 +22,17 @@ type AuthLogout = {
     type: "auth/logout";
 };
 
-type AdvertsLoaded = {
-    type: "adverts/loaded";
+type AdvertsLoadedPending = {
+    type: "adverts/loaded/pending";
+};
+type AdvertsLoadedFulfilled = {
+    type: "adverts/loaded/fulfilled";
     payload: Advert[];
 };
+type AdvertsLoadedRejected = {
+    type: "adverts/loaded/rejected";
+    payload: Error;
+}
 
 type advertsCreated = {
     type: "adverts/created";
@@ -66,10 +74,38 @@ export const authLogout = (): AuthLogout => ({
     type: "auth/logout",
 });
 
-export const advertsLoaded = (adverts: Advert[]): AdvertsLoaded => ({
-    type: "adverts/loaded",
+
+
+export const advertsLoadedPending = (): AdvertsLoadedPending => ({
+    type: "adverts/loaded/pending",
+});
+export const advertsLoadedFulfilled = (adverts: Advert[]): AdvertsLoadedFulfilled => ({
+    type: "adverts/loaded/fulfilled",
     payload: adverts,
 });
+export const advertsLoadedRejected = (error:Error): AdvertsLoadedRejected => ({
+    type: "adverts/loaded/rejected",
+    payload: error,
+});
+
+export function  advertsLoaded(): AppThunk<Promise<void>> { 
+        return async function(dispatch, getState){
+            const state = getState();
+            if(state.adverts){
+                return;
+            }
+            dispatch(advertsLoadedPending());
+            try {
+                const adverts = await getAdverts();
+                dispatch(advertsLoadedFulfilled(adverts));
+                
+            } catch (error) {
+                if(isApiClientError(error)){
+                    dispatch(advertsLoadedRejected(error));
+            }
+        }
+    }
+}
 
 export const advertCreated = (advert: Advert): advertsCreated => ({
     type: "adverts/created",
@@ -86,6 +122,8 @@ export type Actions =
 | AuthLoginFulfilled
 | AuthLoginRejected 
 | AuthLogout 
-| AdvertsLoaded 
+| AdvertsLoadedPending
+| AdvertsLoadedFulfilled
+| AdvertsLoadedRejected 
 | advertsCreated
 | uiResetError;

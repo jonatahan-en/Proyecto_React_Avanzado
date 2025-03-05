@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Euro, SearchX } from "lucide-react";
-import { isApiClientError } from "@/api/error";
 import { Button } from "@/components/ui/button";
-import { getAdverts } from "./service";
 import { getAdvertsSelector } from  "../../store/selectors";
 import { filterAdverts } from "./filters";
 import FiltersInputs from "./components/filters-inputs";
 import { AdvertCard } from "./components/advert-card";
 import type {  Filters } from "./types";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { advertsLoaded } from "@/store/actions";
-import { useAppSelector } from "@/store";
+import { isApiClientError } from "@/api/error";
 
 function NoAdverts() {
   return (
@@ -52,32 +50,28 @@ function NoMatches() {
 export default function AdvertsPage() {
   const navigate = useNavigate();
   const adverts = useAppSelector(getAdvertsSelector);
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [, setError] = useState<null>(null);
   const [filters, setFilters] = useState<Filters | null>(null);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(advertsLoaded());
+  //},[dispatch])
     async function loadAdverts() {
       try {
         setIsLoading(true);
-        const adverts = await getAdverts();
-        dispatch(advertsLoaded(adverts));
       } catch (error) {
         if (isApiClientError(error)) {
           if (error.code === "UNAUTHORIZED") {
             return navigate("/login");
           }
         }
-        setError(() => {
-          throw error;
-        });
       } finally {
         setIsLoading(false);
       }
     }
     loadAdverts();
-  }, [dispatch,navigate]);
+  }, [dispatch, navigate]);
 
   if (!adverts || isLoading) {
     return "Loading....";
