@@ -8,11 +8,9 @@ import { Euro, Trash2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import ActionButton from "@/components/shared/action-button";
 import imagePlacehoder from "@/assets/placeholder.webp";
-import {  useAppDispatch, useAppSelector} from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { getAdvertSelector } from "@/store/selectors";
-import { deleteAdvert} from "./service";
-import { advertLoadedDetail } from "@/store/actions";
-
+import { advertsDelete, advertLoadedDetail } from "@/store/actions";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -57,9 +55,7 @@ const AdvertPhoto = ({
 export default function AdvertPage() {
   const navigate = useNavigate();
   const params = useParams();
-  //const [ setAdvert] = useState<Advert | null>(null);
-  const advert = useAppSelector(getAdvertSelector( params.advertId));
-  //const [loading, setLoading] = useState(false);
+  const advert = useAppSelector(getAdvertSelector(params.advertId));
   const [, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const dispatch = useAppDispatch();
@@ -84,27 +80,15 @@ export default function AdvertPage() {
   );
 
   useEffect(() => {
-    //async function loadAdvert() {
-      //try {
-        //setLoading(true);
-        if(advertId){
-      dispatch(advertLoadedDetail(advertId))
-
-    //     setAdvert(advert);
-    //   } catch (error) {
-    //     handleError(error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-    // loadAdvert();
-        }
+    if (advertId) {
+      dispatch(advertLoadedDetail(advertId));
+    }
   }, [dispatch, advertId]);
 
   const handleDelete = async () => {
     try {
       setDeleting(true);
-      await deleteAdvert(advertId );
+      await dispatch(advertsDelete(advertId));
       navigate("/adverts");
     } catch (error) {
       handleError(error);
@@ -113,7 +97,7 @@ export default function AdvertPage() {
     }
   };
 
-  if (!advert ) {
+  if (!advert) {
     return "Loading....";
   }
 

@@ -1,9 +1,9 @@
-import type { Credentials } from "@/pages/auth/types";
+    import type { Credentials } from "@/pages/auth/types";
 import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
 import { login } from "@/pages/auth/service";
 import type { AppThunk } from ".";
-import { createAdvert, getAdvert, getAdverts, getTags } from "@/pages/adverts/service";
+import { createAdvert, deleteAdvert, getAdvert, getAdverts, getTags } from "@/pages/adverts/service";
 import { getAdvertSelector } from "./selectors";
 
 // para manejar el login en redux  
@@ -56,6 +56,18 @@ type AdvertsCreatedFulfilled = {
 };
 type AdvertsCreatedRejected = {
     type: "adverts/created/rejected";
+    payload: Error;
+}; 
+
+type AdvertsDeletedPending = {
+    type: "adverts/deleted/pending";
+};
+type AdvertsDeletedFulfilled = {
+    type: "adverts/deleted/fulfilled";
+    payload: string;
+};
+type AdvertsDeletedRejected = {
+    type: "adverts/deleted/rejected";
     payload: Error;
 };
 
@@ -216,6 +228,35 @@ export function advertsCreate(
     }
 }
 
+export const advertDeletedPending = (): AdvertsDeletedPending => ({
+    type: "adverts/deleted/pending",
+});
+export const advertDeletedFulfilled = (advertId: string): AdvertsDeletedFulfilled => ({
+    type: "adverts/deleted/fulfilled",
+    payload: advertId,
+});
+export const advertDeletedRejected = (error:Error): AdvertsDeletedRejected => ({
+    type: "adverts/deleted/rejected",
+    payload: error,
+});
+
+// esta funcion es un thunk que se encarga de borrar un anuncio y despues de hacerlo dispara las acciones de advertDeletedFulfilled o advertDeletedRejected
+export function advertsDelete(advertId: string): AppThunk<Promise<void>> {
+    return async function(dispatch) {
+        dispatch(advertDeletedPending());
+        try {
+            await deleteAdvert(advertId);
+            dispatch(advertDeletedFulfilled(advertId));
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(advertDeletedRejected(error));
+            }
+        }
+    }
+}
+
+
+
 export const uiResetError = (): uiResetError => ({
     type: "ui/reset-error",
 });
@@ -235,4 +276,7 @@ export type Actions =
 | TagsLoadedPending
 | TagsLoadedFulfilled
 | TagsLoadedRejected
+| AdvertsDeletedPending
+| AdvertsDeletedFulfilled
+| AdvertsDeletedRejected
 | uiResetError;

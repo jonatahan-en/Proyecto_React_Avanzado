@@ -56,12 +56,18 @@ export function auth(state = defaultState.auth,action: Actions):State["auth"] {
     }
 }
 
-export function adverts(state = defaultState.adverts,action: Actions):State["adverts"] {
+export function adverts(state = defaultState.adverts, action: Actions): State["adverts"] {
     switch (action.type) {
         case "adverts/loaded/fulfilled":
             return action.payload;
         case "adverts/created/fulfilled":
-            return { ...state, data:[ ... (state.data ?? []), action.payload] };
+            return { ...state, data: [...(state.data ?? []), action.payload] };
+        case "adverts/deleted/pending":
+            return state;
+        case "adverts/deleted/fulfilled":
+            return { ...state, data: state.data ? state.data.filter(advert => advert.id !== action.payload) : null };
+        case "adverts/deleted/rejected":
+            return state;
         default:
             return state;
     }

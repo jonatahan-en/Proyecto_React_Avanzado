@@ -5,6 +5,7 @@ import { getTagsSelector, getTagsPendingSelector, getTagsErrorSelector } from '@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Tags } from "../types";
+import { Badge } from 'lucide-react';
 
 const tagsClassNames: Record<string, string> = {
   lifestyle:
@@ -33,7 +34,11 @@ export default function TagsSelector({
   }, [dispatch]);
 
   if (error) {
-    console.error(error);
+    return (
+      <Badge  className="text-sm">
+        Error loading tags
+      </Badge>
+    );
   }
 
   if (!tags || loading) {
