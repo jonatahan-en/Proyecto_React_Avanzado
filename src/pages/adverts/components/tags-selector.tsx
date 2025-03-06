@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { getTags } from "../service";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { LoadTags} from '@/store/actions';
+import { getTagsSelector, getTagsPendingSelector, getTagsErrorSelector } from '@/store/selectors';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Tags } from "../types";
-import { Badge } from "@/components/ui/badge";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle:
@@ -22,31 +23,17 @@ export default function TagsSelector({
   onChange: (tags: Tags) => void;
   className?: string;
 }) {
-  const [tags, setTags] = useState<Tags | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const dispatch = useAppDispatch();
+  const tags = useAppSelector(getTagsSelector);
+  const loading = useAppSelector(getTagsPendingSelector);
+  const error = useAppSelector(getTagsErrorSelector);
 
   useEffect(() => {
-    async function loadTags() {
-      try {
-        setLoading(true);
-        const tags = await getTags();
-        setTags(tags);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error);
-        }
-        // TODO: fire an error to be caught by ErrorBoundary
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadTags();
-  }, []);
+    dispatch(LoadTags());
+  }, [dispatch]);
 
   if (error) {
-    return <Badge className="bg-destructive h-9">No tags available</Badge>;
+    console.error(error);
   }
 
   if (!tags || loading) {

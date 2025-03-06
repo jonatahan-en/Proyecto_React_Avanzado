@@ -9,7 +9,7 @@ import ActionButton from "@/components/shared/action-button";
 import Logo from "@/components/shared/nodepop-react";
 import type { Credentials } from "./types";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { authLogin,  uiResetError } from "@/store/actions";
+import { authLogin, uiResetError} from "@/store/actions";
 import { getUiSelector } from "@/store/selectors";
 
 
@@ -24,7 +24,7 @@ function LoginForm({
     password: "",
   });
   const dispatch = useAppDispatch();
-  const {pending, error} = useAppSelector(getUiSelector)
+  const {pending,error} = useAppSelector(getUiSelector)
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCredentials((credentials) => ({
@@ -82,8 +82,9 @@ function LoginForm({
         <ActionButton
           disabled={!canSubmit || pending}
           loading={pending}
+          
           className="w-full"
-        >
+          >
           {pending
             ? "Please wait"
             : canSubmit

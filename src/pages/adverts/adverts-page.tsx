@@ -56,7 +56,6 @@ export default function AdvertsPage() {
 
   useEffect(() => {
     dispatch(advertsLoaded());
-  //},[dispatch])
     async function loadAdverts() {
       try {
         setIsLoading(true);

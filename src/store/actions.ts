@@ -3,17 +3,16 @@ import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
 import { login } from "@/pages/auth/service";
 import type { AppThunk } from ".";
-import { createAdvert, getAdvert, getAdverts } from "@/pages/adverts/service";
+import { createAdvert, getAdvert, getAdverts, getTags } from "@/pages/adverts/service";
 import { getAdvertSelector } from "./selectors";
 
-
+// para manejar el login en redux  
 type AuthLoginPending = {
     type: "auth/login/pending";
 };
 type AuthLoginFulfilled = {
     type: "auth/login/fulfilled";
 };
-
 type AuthLoginRejected = {
     type: "auth/login/rejected";
     payload: Error;
@@ -22,7 +21,7 @@ type AuthLoginRejected = {
 type AuthLogout = {
     type: "auth/logout";
 };
-
+// para manejar los anuncios en redux
 type AdvertsLoadedPending = {
     type: "adverts/loaded/pending";
 };
@@ -34,20 +33,20 @@ type AdvertsLoadedRejected = {
     type: "adverts/loaded/rejected";
     payload: Error;
 }
+// para manejar la carga de tags en redux
+type TagsLoadedPending = {
+    type: "tags/loaded/pending";
+};
+type TagsLoadedFulfilled = {
+    type: "tags/loaded/fulfilled";
+    payload: string[];
+};
+type TagsLoadedRejected = {
+    type: "tags/loaded/rejected";
+    payload: Error;
+}
 
-// type AdvertLoadedPending = {
-//     type: "adverts/loaded/pending";
-// };
-// type AdvertLoadedFulfilled = {
-//     type: "adverts/loaded/fulfilled";
-//     payload: Advert[];
-// };
-// type AdvertLoadedRejected = {
-//     type: "adverts/loaded/rejected";
-//     payload: Error;
-// }
-
-
+// para manejar la creacion de anuncios en redux
 type AdvertsCreatedPending = {
     type: "adverts/created/pending";
 };
@@ -76,7 +75,7 @@ export const authLoginRejected = (error: Error): AuthLoginRejected => ({
     type: "auth/login/rejected",
     payload: error,
 });
-
+// esta funcion es un thunk que se encarga de hacer el login y despues de hacerlo dispara las acciones de login fulfilled o rejected
 export  function authLogin(
     credentials: Credentials
 ): AppThunk<Promise<void>> {
@@ -115,7 +114,7 @@ export const advertsLoadedRejected = (error:Error): AdvertsLoadedRejected => ({
     type: "adverts/loaded/rejected",
     payload: error,
 });
-
+// esta funcion es un thunk que se encarga de cargar los anuncios y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
 export function  advertsLoaded(): AppThunk<Promise<void>> { 
         return async function(dispatch, getState){
             const state = getState();
@@ -135,18 +134,34 @@ export function  advertsLoaded(): AppThunk<Promise<void>> {
     }
 }
 
-// export const advertLoadedPending = (): AdvertLoadedPending => ({
-//     type: "adverts/loaded/pending",
-// });
-// export const advertLoadedFulfilled = (adverts: Advert[]): AdvertLoadedFulfilled => ({
-//     type: "adverts/loaded/fulfilled",
-//     payload: adverts,
-// });
-// export const advertLoadedRejected = (error:Error): AdvertLoadedRejected => ({
-//     type: "adverts/loaded/rejected",
-//     payload: error,
-// });
+export const tagsLoadedPending = (): TagsLoadedPending => ({
+    type: "tags/loaded/pending",
+});
+export const tagsLoadedFulfilled = (tags: string[]): TagsLoadedFulfilled => ({
+    type: "tags/loaded/fulfilled",
+    payload: tags,
+});
+export const tagsLoadedRejected = (error:Error): TagsLoadedRejected => ({
+    type: "tags/loaded/rejected",
+    payload: error,
+});
 
+// esta funcion es un thunk que se encarga de cargar los tags y despues de hacerlo dispara las acciones de tagsLoadedFulfilled o tagsLoadedRejected
+export function LoadTags(): AppThunk<Promise<void>> {
+    return async function(dispatch) {
+        dispatch(tagsLoadedPending());
+        try {
+            const tags = await getTags();
+            dispatch(tagsLoadedFulfilled(tags));
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(tagsLoadedRejected(error));
+            }
+        }
+    }
+}
+
+// esta funcion es un thunk que se encarga de cargar un anuncio y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
 export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> { 
     return async function(dispatch, getState){
         const state = getState();
@@ -168,8 +183,7 @@ export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> {
 
 
 export const advertCreatedpending = (): AdvertsCreatedPending  => ({
-    type: "adverts/created/pending",
-    
+    type: "adverts/created/pending",   
 });
 export const advertCreatedFulfilled = (advert: Advert): AdvertsCreatedFulfilled => ({
     type: "adverts/created/fulfilled",
@@ -180,6 +194,7 @@ export const advertCreatedRejected = (error:Error): AdvertsCreatedRejected => ({
     payload: error,
 })
 
+// esta funcion es un thunk que se encarga de crear un anuncio y despues de hacerlo dispara las acciones de advertCreatedFulfilled o advertCreatedRejected
 export function advertsCreate(
     advertDto: CreateAdvertDto,
 ): AppThunk<Promise<Advert>> {
@@ -217,4 +232,7 @@ export type Actions =
 | AdvertsCreatedPending
 | AdvertsCreatedFulfilled
 | AdvertsCreatedRejected
+| TagsLoadedPending
+| TagsLoadedFulfilled
+| TagsLoadedRejected
 | uiResetError;
