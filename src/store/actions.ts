@@ -1,9 +1,7 @@
 import type { Credentials } from "@/pages/auth/types";
 import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
-import { login, logout } from "@/pages/auth/service";
 import type { AppThunk } from ".";
-import { createAdvert, deleteAdvert, getAdvert, getAdverts, getTags } from "@/pages/adverts/service";
 import { getAdvertSelector } from "./selectors";
 
 // para manejar el login en redux  
@@ -97,10 +95,10 @@ export const authLoginRejected = (error: Error): AuthLoginRejected => ({
 });
 // esta funcion es un thunk que se encarga de hacer el login y despues de hacerlo dispara las acciones de login fulfilled o rejected
 export const authLogin = (credentials: Credentials, rememberMe: boolean): AppThunk<Promise<void>> => {
-    return async (dispatch) => {
+    return async (dispatch, _getState, {api}) => {
         dispatch(authLoginPending());
         try {
-            await login(credentials, rememberMe);
+            await api.auth.login (credentials, rememberMe);
             dispatch(authLoginFulfilled());
         } catch (error) {
             if (error instanceof Error) {
@@ -113,11 +111,11 @@ export const authLogin = (credentials: Credentials, rememberMe: boolean): AppThu
 };
 
 export const authLogout = (): AppThunk<Promise<void>> => {
-    return async (dispatch, getState) => {
+    return async (dispatch, getState, {api}) => {
         const state = getState();
         const rememberMe = state.rememberMe;
         if (!rememberMe) {
-            await logout();
+            await api.auth.logout();
         }
         dispatch({ type: "auth/logout" });
     };
@@ -139,14 +137,14 @@ export const advertsLoadedRejected = (error: Error): AdvertsLoadedRejected => ({
 });
 // esta funcion es un thunk que se encarga de cargar los anuncios y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
 export function advertsLoaded(): AppThunk<Promise<void>> { 
-    return async function(dispatch, getState){
+    return async function(dispatch, getState, {api}){
         const state = getState();
         if(state.adverts.loaded){
             return;
         }
         dispatch(advertsLoadedPending());
         try {
-            const adverts = await getAdverts();
+            const adverts = await api.adverts.getAdverts();
             dispatch(advertsLoadedFulfilled(adverts, true));
         } catch (error) {
             if(isApiClientError(error)){
@@ -170,10 +168,10 @@ export const tagsLoadedRejected = (error: Error): TagsLoadedRejected => ({
 
 // esta funcion es un thunk que se encarga de cargar los tags y despues de hacerlo dispara las acciones de tagsLoadedFulfilled o tagsLoadedRejected
 export function LoadTags(): AppThunk<Promise<void>> {
-    return async function(dispatch) {
+    return async function(dispatch, _getState, {api}) {
         dispatch(tagsLoadedPending());
         try {
-            const tags = await getTags();
+            const tags = await api.adverts.getTags();
             dispatch(tagsLoadedFulfilled(tags));
         } catch (error) {
             if(isApiClientError(error)){
@@ -185,14 +183,14 @@ export function LoadTags(): AppThunk<Promise<void>> {
 
 // esta funcion es un thunk que se encarga de cargar un anuncio y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
 export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> { 
-    return async function(dispatch, getState){
+    return async function(dispatch, getState, {api}){
         const state = getState();
         if(getAdvertSelector(advertId)(state)){
             return;
         }
         dispatch(advertsLoadedPending());
         try {
-            const advert= await getAdvert(advertId);
+            const advert= await api.adverts.getAdvert(advertId);
             dispatch(advertsLoadedFulfilled([advert]));
         } catch (error) {
             if(isApiClientError(error)){
@@ -218,11 +216,11 @@ export const advertCreatedRejected = (error: Error): AdvertsCreatedRejected => (
 export function advertsCreate(
     advertDto: CreateAdvertDto,
 ): AppThunk<Promise<Advert>> {
-    return async function(dispatch) {
+    return async function(dispatch, _State, {api}) {
         dispatch(advertCreatedpending());
         try {
-            const createdAdvert = await createAdvert(advertDto);
-            const advert = await getAdvert(createdAdvert.id);
+            const createdAdvert = await api.adverts.createAdvert(advertDto);
+            const advert = await api.adverts.getAdvert(createdAdvert.id);
             dispatch(advertCreatedFulfilled(advert));
             return advert;
         } catch (error) {
@@ -248,10 +246,10 @@ export const advertDeletedRejected = (error: Error): AdvertsDeletedRejected => (
 
 // esta funcion es un thunk que se encarga de borrar un anuncio y despues de hacerlo dispara las acciones de advertDeletedFulfilled o advertDeletedRejected
 export function advertsDelete(advertId: string): AppThunk<Promise<void>> {
-    return async function(dispatch) {
+    return async function(dispatch, _getState, {api}) {
         dispatch(advertDeletedPending());
         try {
-            await deleteAdvert(advertId);
+            await api.adverts.deleteAdvert(advertId);
             dispatch(advertDeletedFulfilled(advertId));
         } catch (error) {
             if(isApiClientError(error)){
