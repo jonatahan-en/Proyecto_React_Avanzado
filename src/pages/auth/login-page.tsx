@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { login } from "./service";
 import { Input } from "@/components/ui/input";
@@ -9,10 +9,8 @@ import ActionButton from "@/components/shared/action-button";
 import Logo from "@/components/shared/nodepop-react";
 import type { Credentials } from "./types";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { authLogin, uiResetError} from "@/store/actions";
+import { authLogin, uiResetError, authSetRememberMe } from "@/store/actions";
 import { getUiSelector } from "@/store/selectors";
-
-
 
 function LoginForm({
   onSubmit,
@@ -24,7 +22,12 @@ function LoginForm({
     password: "",
   });
   const dispatch = useAppDispatch();
-  const {pending,error} = useAppSelector(getUiSelector)
+  const { pending, error } = useAppSelector(getUiSelector);
+  const rememberMe = useAppSelector((state) => state.rememberMe);
+
+  useEffect(() => {
+    dispatch(authSetRememberMe(rememberMe));
+  }, [dispatch, rememberMe]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCredentials((credentials) => ({
@@ -33,17 +36,17 @@ function LoginForm({
     }));
   };
 
+  const handleCheckboxChange = (checked: boolean) => {
+    dispatch(authSetRememberMe(checked));
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-
-    const formData = new FormData(event.currentTarget);
-    const remember = !!formData.get("remember");
     try {
-      await dispatch(authLogin(credentials))
-      await onSubmit({ ...credentials, remember });
+      await dispatch(authLogin(credentials, rememberMe));
+      await onSubmit({ ...credentials, remember: rememberMe });
     } catch (error) {
-      console.log(error); 
+      console.log(error);
     }
   };
 
@@ -76,20 +79,23 @@ function LoginForm({
           />
         </FormField>
         <FormField className="flex py-2">
-          <Switch name="remember" value="remember" />
+          <Switch
+            name="remember"
+            checked={rememberMe}
+            onCheckedChange={handleCheckboxChange}
+          />
           Remember me next time
         </FormField>
         <ActionButton
           disabled={!canSubmit || pending}
           loading={pending}
-          
           className="w-full"
-          >
+        >
           {pending
             ? "Please wait"
             : canSubmit
-              ? "Log in to Nodepop"
-              : "Enter your credentials"}
+            ? "Log in to Nodepop"
+            : "Enter your credentials"}
         </ActionButton>
       </form>
       {error && (
@@ -99,7 +105,7 @@ function LoginForm({
         >
           {error.message}
         </div>
-        )}
+      )}
       <Toaster position="bottom-center" richColors />
     </div>
   );
@@ -108,9 +114,6 @@ function LoginForm({
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  
-
-  
 
   return (
     <div className="mx-auto h-dvh max-w-md">

@@ -1,7 +1,7 @@
-    import type { Credentials } from "@/pages/auth/types";
+import type { Credentials } from "@/pages/auth/types";
 import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
-import { login } from "@/pages/auth/service";
+import { login, logout } from "@/pages/auth/service";
 import type { AppThunk } from ".";
 import { createAdvert, deleteAdvert, getAdvert, getAdverts, getTags } from "@/pages/adverts/service";
 import { getAdvertSelector } from "./selectors";
@@ -70,11 +70,19 @@ type AdvertsDeletedRejected = {
     type: "adverts/deleted/rejected";
     payload: Error;
 };
-
+type AuthSetRememberMe = {
+    type: "auth/set-remember-me";
+    payload: boolean;
+};
 
 type uiResetError = {
     type: "ui/reset-error";
 }
+
+export const authSetRememberMe = (rememberMe: boolean): AuthSetRememberMe => ({
+    type: "auth/set-remember-me",
+    payload: rememberMe,
+});
 
 // estas funciones llevan el nombre de actionscreeators y sirve para crear las acciones
 export const authLoginPending = (): AuthLoginPending => ({
@@ -88,29 +96,32 @@ export const authLoginRejected = (error: Error): AuthLoginRejected => ({
     payload: error,
 });
 // esta funcion es un thunk que se encarga de hacer el login y despues de hacerlo dispara las acciones de login fulfilled o rejected
-export  function authLogin(
-    credentials: Credentials
-): AppThunk<Promise<void>> {
-    return  async function(dispatch){
-        dispatch(authLoginPending())
+export const authLogin = (credentials: Credentials, rememberMe: boolean): AppThunk<Promise<void>> => {
+    return async (dispatch) => {
+        dispatch(authLoginPending());
         try {
-            await login(credentials, true);
+            await login(credentials, rememberMe);
             dispatch(authLoginFulfilled());
         } catch (error) {
-            if(isApiClientError(error)){
+            if (error instanceof Error) {
                 dispatch(authLoginRejected(error));
+            } else {
+                dispatch(authLoginRejected(new Error("An unknown error occurred")));
             }
         }
     };
-}
-
-export const authLogout = (): AuthLogout => {
-    return {
-    type: "auth/logout",
-    }
 };
 
-
+export const authLogout = (): AppThunk<Promise<void>> => {
+    return async (dispatch, getState) => {
+        const state = getState();
+        const rememberMe = state.rememberMe;
+        if (!rememberMe) {
+            await logout();
+        }
+        dispatch({ type: "auth/logout" });
+    };
+};
 
 export const advertsLoadedPending = (): AdvertsLoadedPending => ({
     type: "adverts/loaded/pending",
@@ -120,27 +131,26 @@ export const advertsLoadedFulfilled = (
     loaded?: boolean
 ): AdvertsLoadedFulfilled => ({
     type: "adverts/loaded/fulfilled",
-    payload: { data: adverts, loaded: !! loaded },
+    payload: { data: adverts, loaded: !!loaded },
 });
-export const advertsLoadedRejected = (error:Error): AdvertsLoadedRejected => ({
+export const advertsLoadedRejected = (error: Error): AdvertsLoadedRejected => ({
     type: "adverts/loaded/rejected",
     payload: error,
 });
 // esta funcion es un thunk que se encarga de cargar los anuncios y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
-export function  advertsLoaded(): AppThunk<Promise<void>> { 
-        return async function(dispatch, getState){
-            const state = getState();
-            if(state.adverts.loaded){
-                return;
-            }
-            dispatch(advertsLoadedPending());
-            try {
-                const adverts = await getAdverts();
-                dispatch(advertsLoadedFulfilled(adverts, true));
-                
-            } catch (error) {
-                if(isApiClientError(error)){
-                    dispatch(advertsLoadedRejected(error));
+export function advertsLoaded(): AppThunk<Promise<void>> { 
+    return async function(dispatch, getState){
+        const state = getState();
+        if(state.adverts.loaded){
+            return;
+        }
+        dispatch(advertsLoadedPending());
+        try {
+            const adverts = await getAdverts();
+            dispatch(advertsLoadedFulfilled(adverts, true));
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(advertsLoadedRejected(error));
             }
         }
     }
@@ -153,7 +163,7 @@ export const tagsLoadedFulfilled = (tags: string[]): TagsLoadedFulfilled => ({
     type: "tags/loaded/fulfilled",
     payload: tags,
 });
-export const tagsLoadedRejected = (error:Error): TagsLoadedRejected => ({
+export const tagsLoadedRejected = (error: Error): TagsLoadedRejected => ({
     type: "tags/loaded/rejected",
     payload: error,
 });
@@ -184,15 +194,13 @@ export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> {
         try {
             const advert= await getAdvert(advertId);
             dispatch(advertsLoadedFulfilled([advert]));
-            
         } catch (error) {
             if(isApiClientError(error)){
                 dispatch(advertsLoadedRejected(error));
+            }
         }
     }
 }
-}
-
 
 export const advertCreatedpending = (): AdvertsCreatedPending  => ({
     type: "adverts/created/pending",   
@@ -201,7 +209,7 @@ export const advertCreatedFulfilled = (advert: Advert): AdvertsCreatedFulfilled 
     type: "adverts/created/fulfilled",
     payload: advert,
 });
-export const advertCreatedRejected = (error:Error): AdvertsCreatedRejected => ({
+export const advertCreatedRejected = (error: Error): AdvertsCreatedRejected => ({
     type: "adverts/created/rejected",
     payload: error,
 })
@@ -213,17 +221,15 @@ export function advertsCreate(
     return async function(dispatch) {
         dispatch(advertCreatedpending());
         try {
-        const createdAdvert = await createAdvert(advertDto);
-        const advert = await getAdvert(createdAdvert.id);
-        dispatch(advertCreatedFulfilled(advert));
-        return advert;
-                
+            const createdAdvert = await createAdvert(advertDto);
+            const advert = await getAdvert(createdAdvert.id);
+            dispatch(advertCreatedFulfilled(advert));
+            return advert;
         } catch (error) {
             if(isApiClientError(error)){
                 dispatch(advertCreatedRejected(error));
             }
             throw error;
-            
         }
     }
 }
@@ -235,7 +241,7 @@ export const advertDeletedFulfilled = (advertId: string): AdvertsDeletedFulfille
     type: "adverts/deleted/fulfilled",
     payload: advertId,
 });
-export const advertDeletedRejected = (error:Error): AdvertsDeletedRejected => ({
+export const advertDeletedRejected = (error: Error): AdvertsDeletedRejected => ({
     type: "adverts/deleted/rejected",
     payload: error,
 });
@@ -255,12 +261,9 @@ export function advertsDelete(advertId: string): AppThunk<Promise<void>> {
     }
 }
 
-
-
 export const uiResetError = (): uiResetError => ({
     type: "ui/reset-error",
 });
-
 
 export type Actions = 
 | AuthLoginPending
@@ -279,4 +282,5 @@ export type Actions =
 | AdvertsDeletedPending
 | AdvertsDeletedFulfilled
 | AdvertsDeletedRejected
+| AuthSetRememberMe
 | uiResetError;

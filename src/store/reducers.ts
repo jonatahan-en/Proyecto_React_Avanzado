@@ -1,9 +1,9 @@
 import type { Advert } from "../pages/adverts/types";
 import type { Actions } from "./actions";
 
-
 export type State = {
     auth: boolean;
+    rememberMe: boolean; // Añadir el estado rememberMe
     adverts: { data: Advert[] | null, loaded: boolean };
     ui: {
         pending: boolean;
@@ -18,7 +18,8 @@ export type State = {
 
 const defaultState: State = {
     auth: false,
-    adverts:{ data: null, loaded: false },
+    rememberMe: false, // Estado inicial de rememberMe
+    adverts: { data: null, loaded: false },
     ui: {
         pending: false,
         error: null,
@@ -33,26 +34,33 @@ const defaultState: State = {
 export function tags(state = defaultState.tags, action: Actions): State["tags"] {
     switch (action.type) {
         case "tags/loaded/pending":
-            return { ...state, pending: true, error: null };
+        return { ...state, pending: true, error: null };
         case "tags/loaded/fulfilled":
-            return { ...state, pending: false, data: action.payload };
+        return { ...state, pending: false, data: action.payload };
         case "tags/loaded/rejected":
-            return { ...state, pending: false, error: action.payload};
+        return { ...state, pending: false, error: action.payload };
         default:
-            return state;
+        return state;
     }
 }
 
-
-
-export function auth(state = defaultState.auth,action: Actions):State["auth"] {
+export function auth(state = defaultState.auth, action: Actions): State["auth"] {
     switch (action.type) {
         case "auth/login/fulfilled":
-            return  true;
+        return true;
         case "auth/logout":
-            return  false;
+        return false;
         default:
-            return state;
+        return state;
+    }
+}
+
+export function rememberMe(state = defaultState.rememberMe, action: Actions): State["rememberMe"] {
+    switch (action.type) {
+        case "auth/set-remember-me":
+        return action.payload;
+        default:
+        return state;
     }
 }
 
@@ -73,16 +81,16 @@ export function adverts(state = defaultState.adverts, action: Actions): State["a
     }
 }
 
-export function ui(state = defaultState.ui, action: Actions) :State[ "ui" ] {
-    switch (action.type)  {
+export function ui(state = defaultState.ui, action: Actions): State["ui"] {
+    switch (action.type) {
         case "ui/reset-error":
-            return {...state, error: null};
+            return { ...state, error: null };
         case "auth/login/pending":
-            return {pending: true, error: null};
+            return { pending: true, error: null };
         case "auth/login/fulfilled":
-            return {pending: false, error: null};
+            return { pending: false, error: null };
         case "auth/login/rejected":
-            return {pending: false, error: action.payload};
+            return { pending: false, error: action.payload };
         default:
             return state;
     }

@@ -4,7 +4,7 @@ import {
   setAuthorizationHeader,
 } from "@/api/client";
 import storage from "@/utils/storage";
-import type { Credentials, Login} from "./types";
+import type { Credentials, Login } from "./types";
 
 export async function login(credentials: Credentials, remember: boolean) {
   const response = await client.post<Login>("/auth/login", credentials);
