@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
-import { isApiClientError } from "@/api/error";
 import {  getAdvert} from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
@@ -32,11 +30,9 @@ function validatePhoto(value: FormDataEntryValue | null): File | undefined {
 }
 
 export default function NewAdvertPage() {
-  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [tags, setTags] = useState<Tags>([]);
   const [loading, setLoading] = useState(false);
-  const [, setError] = useState(null);
   const dispatch = useAppDispatch();
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +51,6 @@ export default function NewAdvertPage() {
     const price = validatePrice(formData.get("price"));
     const photo = validatePhoto(formData.get("photo"));
 
-    try {
       setLoading(true);
       const createdAdvert = await dispatch(advertsCreate({
         name,
@@ -66,19 +61,7 @@ export default function NewAdvertPage() {
       }));
       const advert = await getAdvert(createdAdvert.id);
       dispatch(advertCreatedFulfilled(advert));
-      navigate(`/adverts/${createdAdvert.id}`);
-    } catch (error) {
-      if (isApiClientError(error)) {
-        if (error.code === "UNAUTHORIZED") {
-          return navigate("/login");
-        }
-      }
-      setError(() => {
-        throw error;
-      });
-    } finally {
       setLoading(false);
-    }
   };
 
   const buttonDisabled = !name || !tags.length || loading;

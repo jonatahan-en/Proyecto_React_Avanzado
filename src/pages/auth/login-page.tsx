@@ -1,5 +1,4 @@
 import { type ChangeEvent, type FormEvent, useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
 import { login } from "./service";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -42,12 +41,8 @@ function LoginForm({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
       await dispatch(authLogin(credentials, rememberMe));
       await onSubmit({ ...credentials, remember: rememberMe });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const { email, password } = credentials;
@@ -112,8 +107,6 @@ function LoginForm({
 }
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <div className="mx-auto h-dvh max-w-md">
@@ -127,7 +120,6 @@ export default function LoginPage() {
         <LoginForm
           onSubmit={async ({ remember, ...credentials }) => {
             await login(credentials, remember);
-            navigate(location.state?.from ?? "/", { replace: true });
           }}
         />
       </div>

@@ -2,7 +2,6 @@ import type { Credentials } from "@/pages/auth/types";
 import type { Advert, CreateAdvertDto } from "../pages/adverts/types";
 import { isApiClientError } from "@/api/error";
 import type { AppThunk } from ".";
-import { getAdvertSelector } from "./selectors";
 
 // para manejar el login en redux  
 type AuthLoginPending = {
@@ -73,6 +72,18 @@ type AuthSetRememberMe = {
     payload: boolean;
 };
 
+type advertsDetailPending = {
+    type: "adverts/detail/pending";
+};
+type advertsDetailFulfilled = {
+    type: "adverts/detail/fulfilled";
+    payload: Advert;
+};
+type advertsDetailRejected = {
+    type: "adverts/detail/rejected";
+    payload: Error;
+};
+
 type uiResetError = {
     type: "ui/reset-error";
 }
@@ -95,16 +106,16 @@ export const authLoginRejected = (error: Error): AuthLoginRejected => ({
 });
 // esta funcion es un thunk que se encarga de hacer el login y despues de hacerlo dispara las acciones de login fulfilled o rejected
 export const authLogin = (credentials: Credentials, rememberMe: boolean): AppThunk<Promise<void>> => {
-    return async (dispatch, _getState, {api}) => {
+    return async (dispatch, _getState, {api, router}) => {
         dispatch(authLoginPending());
         try {
             await api.auth.login (credentials, rememberMe);
             dispatch(authLoginFulfilled());
+            const to = router.state.location.state?.from || "/";
+            router.navigate(to, { replace: true });
         } catch (error) {
             if (error instanceof Error) {
                 dispatch(authLoginRejected(error));
-            } else {
-                dispatch(authLoginRejected(new Error("An unknown error occurred")));
             }
         }
     };
@@ -181,24 +192,6 @@ export function LoadTags(): AppThunk<Promise<void>> {
     }
 }
 
-// esta funcion es un thunk que se encarga de cargar un anuncio y despues de hacerlo dispara las acciones de advertsLoadedFulfilled o advertsLoadedRejected
-export function advertLoadedDetail(advertId: string): AppThunk<Promise<void>> { 
-    return async function(dispatch, getState, {api}){
-        const state = getState();
-        if(getAdvertSelector(advertId)(state)){
-            return;
-        }
-        dispatch(advertsLoadedPending());
-        try {
-            const advert= await api.adverts.getAdvert(advertId);
-            dispatch(advertsLoadedFulfilled([advert]));
-        } catch (error) {
-            if(isApiClientError(error)){
-                dispatch(advertsLoadedRejected(error));
-            }
-        }
-    }
-}
 
 export const advertCreatedpending = (): AdvertsCreatedPending  => ({
     type: "adverts/created/pending",   
@@ -216,12 +209,13 @@ export const advertCreatedRejected = (error: Error): AdvertsCreatedRejected => (
 export function advertsCreate(
     advertDto: CreateAdvertDto,
 ): AppThunk<Promise<Advert>> {
-    return async function(dispatch, _State, {api}) {
+    return async function(dispatch, _State, {api, router}) {
         dispatch(advertCreatedpending());
         try {
             const createdAdvert = await api.adverts.createAdvert(advertDto);
             const advert = await api.adverts.getAdvert(createdAdvert.id);
             dispatch(advertCreatedFulfilled(advert));
+            await router.navigate(`/adverts/${createdAdvert.id}`);
             return advert;
         } catch (error) {
             if(isApiClientError(error)){
@@ -259,6 +253,35 @@ export function advertsDelete(advertId: string): AppThunk<Promise<void>> {
     }
 }
 
+const advertsDetailPending = (): advertsDetailPending => ({
+    type: "adverts/detail/pending",
+});
+const advertsDetailFulfilled = (advert: Advert): advertsDetailFulfilled => ({
+    type: "adverts/detail/fulfilled",
+    payload: advert,
+});
+const advertsDetailRejected = (error: Error): advertsDetailRejected => ({
+    type: "adverts/detail/rejected",
+    payload: error,
+});
+
+// esta funcion es un thunk que se encarga de cargar un anuncio y despues de hacerlo dispara las acciones de advertsDetailFulfilled o advertsDetailRejected
+export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
+    return async function(dispatch, _getState, {api}) {
+        dispatch(advertsDetailPending());
+        try {
+            const advert = await api.adverts.getAdvert(advertId);
+            dispatch(advertsDetailFulfilled(advert));
+        } catch (error) {
+            if(isApiClientError(error)){
+                dispatch(advertsDetailRejected(error));
+            }
+        }
+    }
+}   
+
+
+
 export const uiResetError = (): uiResetError => ({
     type: "ui/reset-error",
 });
@@ -281,4 +304,7 @@ export type Actions =
 | AdvertsDeletedFulfilled
 | AdvertsDeletedRejected
 | AuthSetRememberMe
+| advertsDetailPending
+| advertsDetailFulfilled
+| advertsDetailRejected
 | uiResetError;

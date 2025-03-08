@@ -10,7 +10,7 @@ import ActionButton from "@/components/shared/action-button";
 import imagePlacehoder from "@/assets/placeholder.webp";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { getAdvertSelector } from "@/store/selectors";
-import { advertsDelete, advertLoadedDetail } from "@/store/actions";
+import { advertsDelete, advertsDetail } from "@/store/actions";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle: "bg-chart-1",
@@ -81,7 +81,7 @@ export default function AdvertPage() {
 
   useEffect(() => {
     if (advertId) {
-      dispatch(advertLoadedDetail(advertId));
+      dispatch(advertsDetail(advertId));
     }
   }, [dispatch, advertId]);
 

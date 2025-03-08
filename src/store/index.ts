@@ -9,8 +9,10 @@ import type { Actions } from "./actions";
 
 import * as auth from "../pages/auth/service";
 import * as adverts from "../pages/adverts/service";
+import type { createBrowserRouter } from "react-router";
 
-
+//creamos los tipos nesesarios para poder utilizar el router
+type Router = ReturnType<typeof createBrowserRouter>;
 // estos tipos son nesesarios para poder utilizar el extraargument en el thunk
 type Api = {
     auth: typeof auth,
@@ -18,11 +20,28 @@ type Api = {
 };
 type ExtraArgument = {
     api: Api;
+    router: Router;
+}
+
+//
+const failurMiddleware = (router:Router) => (store) =>( next )=> (action )=> {
+    const result = next(action);
+    if(!action.type.endsWith("/rejected")){
+        return result;
+    }
+    if(action.payload.code === "NOT_FOUND"){
+        return router.navigate("/404");
+    }
+    if(action.payload.code === "UNAUTHORIZED"){
+        return router.navigate("/login");
+    }
+    return result;
+    
 }
 
 
 // exportamos el store y los tipos nesesarios para utilizarlo
-export default function configureStore(preloadedState:Partial<State>) {
+export default function configureStore(preloadedState:Partial<State>, router: Router) {
     const RootReducer = combineReducers(reducers)
     const store = createStore(
         RootReducer,
@@ -30,8 +49,10 @@ export default function configureStore(preloadedState:Partial<State>) {
         composeWithDevTools(
             applyMiddleware( 
                 thunk.withExtraArgument< State, Actions, ExtraArgument>({
-                    api:{ auth, adverts} 
-                }) 
+                    api:{ auth, adverts},
+                    router, 
+                }),
+                failurMiddleware(router)
             )
         )  
     );
