@@ -22,11 +22,14 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    
+    "types": ["vitest/globals"],
 
     // Path alias
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
+
     }
   },
   "include": ["src"]

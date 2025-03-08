@@ -1,6 +1,6 @@
 export type Tags = string[];
 
-export interface Advert {
+export interface  Advert {
   id: string;
   name: string;
   sale: boolean;

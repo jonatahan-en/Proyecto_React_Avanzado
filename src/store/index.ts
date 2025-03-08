@@ -25,17 +25,17 @@ type ExtraArgument = {
 
 //
 const failurMiddleware = (router: Router) => (store) => (next) => (action) => {
-  const result = next(action);
-  if (!action.type.endsWith("/rejected")) {
+    const result = next(action);
+    if (!action.type.endsWith("/rejected")) {
+        return result;
+    }
+    if (action.payload.code === "NOT_FOUND") {
+        return router.navigate("/404");
+    }
+    if (action.payload.code === "UNAUTHORIZED") {
+        return router.navigate("/login");
+    }
     return result;
-  }
-  if (action.payload.code === "NOT_FOUND") {
-    return router.navigate("/404");
-  }
-  if (action.payload.code === "UNAUTHORIZED") {
-    return router.navigate("/login");
-  }
-  return result;
 };
 
 // exportamos el store y los tipos nesesarios para utilizarlo
