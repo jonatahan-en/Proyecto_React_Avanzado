@@ -41,8 +41,8 @@ function LoginForm({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-      await dispatch(authLogin(credentials, rememberMe));
-      await onSubmit({ ...credentials, remember: rememberMe });
+    await dispatch(authLogin(credentials, rememberMe));
+    await onSubmit({ ...credentials, remember: rememberMe });
   };
 
   const { email, password } = credentials;
@@ -89,13 +89,13 @@ function LoginForm({
           {pending
             ? "Please wait"
             : canSubmit
-            ? "Log in to Nodepop"
-            : "Enter your credentials"}
+              ? "Log in to Nodepop"
+              : "Enter your credentials"}
         </ActionButton>
       </form>
       {error && (
         <div
-          className="text-red-500 bg-red-100 border border-red-400 rounded p-2 cursor-pointer hover:bg-red-200 transition duration-300 ease-in-out"
+          className="cursor-pointer rounded border border-red-400 bg-red-100 p-2 text-red-500 transition duration-300 ease-in-out hover:bg-red-200"
           onClick={() => dispatch(uiResetError())}
         >
           {error.message}
@@ -107,7 +107,6 @@ function LoginForm({
 }
 
 export default function LoginPage() {
-
   return (
     <div className="mx-auto h-dvh max-w-md">
       <div className="grid gap-8 px-6 py-6 pt-12">

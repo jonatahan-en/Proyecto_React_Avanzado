@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {  getAdvert} from "./service";
+import { getAdvert } from "./service";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Tags } from "./types";
 import TagsSelector from "./components/tags-selector";
@@ -51,17 +51,19 @@ export default function NewAdvertPage() {
     const price = validatePrice(formData.get("price"));
     const photo = validatePhoto(formData.get("photo"));
 
-      setLoading(true);
-      const createdAdvert = await dispatch(advertsCreate({
+    setLoading(true);
+    const createdAdvert = await dispatch(
+      advertsCreate({
         name,
         sale,
         price,
         tags,
         photo,
-      }));
-      const advert = await getAdvert(createdAdvert.id);
-      dispatch(advertCreatedFulfilled(advert));
-      setLoading(false);
+      }),
+    );
+    const advert = await getAdvert(createdAdvert.id);
+    dispatch(advertCreatedFulfilled(advert));
+    setLoading(false);
   };
 
   const buttonDisabled = !name || !tags.length || loading;

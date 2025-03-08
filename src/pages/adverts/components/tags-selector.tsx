@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { LoadTags} from '@/store/actions';
-import { getTagsSelector, getTagsPendingSelector, getTagsErrorSelector } from '@/store/selectors';
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { LoadTags } from "@/store/actions";
+import {
+  getTagsSelector,
+  getTagsPendingSelector,
+  getTagsErrorSelector,
+} from "@/store/selectors";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Tags } from "../types";
-import { Badge } from 'lucide-react';
+import { Badge } from "lucide-react";
 
 const tagsClassNames: Record<string, string> = {
   lifestyle:
@@ -34,11 +38,7 @@ export default function TagsSelector({
   }, [dispatch]);
 
   if (error) {
-    return (
-      <Badge  className="text-sm">
-        Error loading tags
-      </Badge>
-    );
+    return <Badge className="text-sm">Error loading tags</Badge>;
   }
 
   if (!tags || loading) {

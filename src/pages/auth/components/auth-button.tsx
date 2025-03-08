@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import ConfirmationButton from "@/components/shared/confirmation-button";
 import { logout } from "../service";
-import { Button } from  "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { authLogout } from "@/store/actions";
 import { getIsLogged } from "@/store/selectors";
@@ -29,7 +29,7 @@ function LogoutButton() {
   );
 }
 
-export default function AuthButton() {;
+export default function AuthButton() {
   const isLogged = useAppSelector(getIsLogged);
 
   if (isLogged) {

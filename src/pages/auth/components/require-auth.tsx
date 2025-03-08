@@ -4,7 +4,7 @@ import { useAppSelector } from "@/store";
 import { getIsLogged } from "@/store/selectors";
 
 export default function RequireAuth({ children }: { children: ReactNode }) {
-  const  isLogged  = useAppSelector(getIsLogged);
+  const isLogged = useAppSelector(getIsLogged);
   const location = useLocation();
 
   return isLogged ? (
