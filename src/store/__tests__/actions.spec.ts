@@ -1,5 +1,5 @@
 //import {describe, expect, test} from  "vitest"; se configura en tsconfig.json y vite.config.ts
-import { authLoginPending, advertsLoadedFulfilled } from "./actions";
+import { authLoginPending, advertsLoadedFulfilled } from "../actions";
 import type { Advert } from "@/pages/adverts/types";
 
 describe("authLoginPending", () => {
@@ -41,3 +41,6 @@ describe("advertsLoadedFulfilled", () => {
         expect(result).toEqual(action);
     });
 });
+
+// test de accion asincrona
+
