@@ -15,12 +15,12 @@ import type { createBrowserRouter } from "react-router";
 type Router = ReturnType<typeof createBrowserRouter>;
 // estos tipos son nesesarios para poder utilizar el extraargument en el thunk
 type Api = {
-  auth: typeof auth;
-  adverts: typeof adverts;
+    auth: typeof auth;
+    adverts: typeof adverts;
 };
 type ExtraArgument = {
-  api: Api;
-  router: Router;
+    api: Api;
+    router: Router;
 };
 
 //
@@ -40,25 +40,25 @@ const failurMiddleware = (router: Router) => (store) => (next) => (action) => {
 
 // exportamos el store y los tipos nesesarios para utilizarlo
 export default function configureStore(
-  preloadedState: Partial<State>,
-  router: Router,
+    preloadedState: Partial<State>,
+    router: Router,
 ) {
-  const RootReducer = combineReducers(reducers);
-  const store = createStore(
-    RootReducer,
-    preloadedState as never,
-    composeWithDevTools(
-      applyMiddleware(
-        thunk.withExtraArgument<State, Actions, ExtraArgument>({
-          api: { auth, adverts },
-          router,
-        }),
-        failurMiddleware(router),
-      ),
-    ),
-  );
+    const RootReducer = combineReducers(reducers);
+    const store = createStore(
+        RootReducer,
+        preloadedState as never,
+        composeWithDevTools(
+            applyMiddleware(
+                thunk.withExtraArgument<State, Actions, ExtraArgument>({
+                    api: { auth, adverts },
+                    router,
+                }),
+                failurMiddleware(router),
+            ),
+        ),
+    );
 
-  return store;
+    return store;
 }
 
 export type AppStore = ReturnType<typeof configureStore>;
@@ -70,8 +70,8 @@ export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
 
 export type AppThunk<ReturnType = void> = thunk.ThunkAction<
-  ReturnType,
-  RootState,
-  ExtraArgument,
-  Actions
+    ReturnType,
+    RootState,
+    ExtraArgument,
+    Actions
 >;

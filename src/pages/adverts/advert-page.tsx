@@ -13,132 +13,132 @@ import { getAdvertSelector } from "@/store/selectors";
 import { advertsDelete, advertsDetail } from "@/store/actions";
 
 const tagsClassNames: Record<string, string> = {
-  lifestyle: "bg-chart-1",
-  mobile: "bg-chart-2",
-  motor: "bg-chart-3",
-  work: "bg-chart-4",
+    lifestyle: "bg-chart-1",
+    mobile: "bg-chart-2",
+    motor: "bg-chart-3",
+    work: "bg-chart-4",
 };
 
 const AdvertPrice = ({ price }: { price: number }) => (
-  <span className="flex h-8 items-center gap-2 text-2xl">
-    <Euro className="stroke-primary" />
-    {price}
-  </span>
+    <span className="flex h-8 items-center gap-2 text-2xl">
+        <Euro className="stroke-primary" />
+        {price}
+    </span>
 );
 
 const AdvertTags = ({ tags }: { tags: Tags }) => (
-  <ul className="flex flex-wrap gap-1">
-    {tags.map((tag) => (
-      <li key={tag}>
-        <Badge className={tagsClassNames[tag]}>{tag}</Badge>
-      </li>
-    ))}
-  </ul>
+    <ul className="flex flex-wrap gap-1">
+        {tags.map((tag) => (
+            <li key={tag}>
+                <Badge className={tagsClassNames[tag]}>{tag}</Badge>
+            </li>
+        ))}
+    </ul>
 );
 
 const AdvertPhoto = ({
-  photo,
-  name,
+    photo,
+    name,
 }: {
-  photo: string | null;
-  name: string;
+    photo: string | null;
+    name: string;
 }) => (
-  <AspectRatio ratio={4 / 3} className="bg-muted grid w-full rounded-md p-4">
-    <img
-      alt={name}
-      src={photo ?? imagePlacehoder}
-      className="h-full w-full rounded-md object-contain"
-    />
-  </AspectRatio>
+    <AspectRatio ratio={4 / 3} className="bg-muted grid w-full rounded-md p-4">
+        <img
+            alt={name}
+            src={photo ?? imagePlacehoder}
+            className="h-full w-full rounded-md object-contain"
+        />
+    </AspectRatio>
 );
 
 export default function AdvertPage() {
-  const navigate = useNavigate();
-  const params = useParams();
-  const advert = useAppSelector(getAdvertSelector(params.advertId));
-  const [, setError] = useState(null);
-  const [deleting, setDeleting] = useState(false);
-  const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const params = useParams();
+    const advert = useAppSelector(getAdvertSelector(params.advertId));
+    const [, setError] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+    const dispatch = useAppDispatch();
 
-  const advertId = params.advertId ?? "";
+    const advertId = params.advertId ?? "";
 
-  const handleError = useCallback(
-    (error: unknown) => {
-      if (isApiClientError(error)) {
-        if (error.code === "UNAUTHORIZED") {
-          return navigate("/login");
+    const handleError = useCallback(
+        (error: unknown) => {
+            if (isApiClientError(error)) {
+                if (error.code === "UNAUTHORIZED") {
+                    return navigate("/login");
+                }
+                if (error.code === "NOT_FOUND") {
+                    return navigate("/404");
+                }
+            }
+            setError(() => {
+                throw error;
+            });
+        },
+        [navigate],
+    );
+
+    useEffect(() => {
+        if (advertId) {
+            dispatch(advertsDetail(advertId));
         }
-        if (error.code === "NOT_FOUND") {
-          return navigate("/404");
-        }
-      }
-      setError(() => {
-        throw error;
-      });
-    },
-    [navigate],
-  );
+    }, [dispatch, advertId]);
 
-  useEffect(() => {
-    if (advertId) {
-      dispatch(advertsDetail(advertId));
+    const handleDelete = async () => {
+        try {
+            setDeleting(true);
+            await dispatch(advertsDelete(advertId));
+            navigate("/adverts");
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    if (!advert) {
+        return "Loading....";
     }
-  }, [dispatch, advertId]);
 
-  const handleDelete = async () => {
-    try {
-      setDeleting(true);
-      await dispatch(advertsDelete(advertId));
-      navigate("/adverts");
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  if (!advert) {
-    return "Loading....";
-  }
-
-  return (
-    <article className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <h2 className="overflow-hidden text-4xl text-ellipsis whitespace-nowrap">
-          {advert.name}
-        </h2>
-        <Badge className="self-start">
-          {advert.sale ? "for sale" : "looking to buy"}
-        </Badge>
-      </div>
-      <div className="flex gap-8">
-        <div className="flex flex-col">
-          <span>Price</span>
-          <AdvertPrice price={advert.price} />
-        </div>
-        <div className="flex grow flex-col">
-          <span>Tags</span>
-          <AdvertTags tags={advert.tags} />
-        </div>
-      </div>
-      <AdvertPhoto photo={advert.photo} name={advert.name} />
-      <ConfirmationButton
-        variant="destructive"
-        confirmation="Are you sure you want to delete this advert?"
-        confirmButton={
-          <ActionButton
-            onClick={handleDelete}
-            variant="destructive"
-            disabled={deleting}
-            loading={deleting}
-          >
-            {deleting ? "" : "Yes"}
-          </ActionButton>
-        }
-      >
-        <Trash2 />
-        Delete
-      </ConfirmationButton>
-    </article>
-  );
+    return (
+        <article className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+                <h2 className="overflow-hidden text-4xl text-ellipsis whitespace-nowrap">
+                    {advert.name}
+                </h2>
+                <Badge className="self-start">
+                    {advert.sale ? "for sale" : "looking to buy"}
+                </Badge>
+            </div>
+            <div className="flex gap-8">
+                <div className="flex flex-col">
+                    <span>Price</span>
+                    <AdvertPrice price={advert.price} />
+                </div>
+                <div className="flex grow flex-col">
+                    <span>Tags</span>
+                    <AdvertTags tags={advert.tags} />
+                </div>
+            </div>
+            <AdvertPhoto photo={advert.photo} name={advert.name} />
+            <ConfirmationButton
+                variant="destructive"
+                confirmation="Are you sure you want to delete this advert?"
+                confirmButton={
+                    <ActionButton
+                        onClick={handleDelete}
+                        variant="destructive"
+                        disabled={deleting}
+                        loading={deleting}
+                    >
+                        {deleting ? "" : "Yes"}
+                    </ActionButton>
+                }
+            >
+                <Trash2 />
+                Delete
+            </ConfirmationButton>
+        </article>
+    );
 }

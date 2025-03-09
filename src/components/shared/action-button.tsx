@@ -5,18 +5,18 @@ import { Loader2 } from "lucide-react";
 type ButtonProps = ComponentProps<typeof Button>;
 
 type ActionButtonProps = ButtonProps & {
-  loading?: boolean;
+    loading?: boolean;
 };
 
 export default function ActionButton({
-  loading,
-  children,
-  ...props
+    loading,
+    children,
+    ...props
 }: ActionButtonProps) {
-  return (
-    <Button {...props}>
-      {loading && <Loader2 className="animate-spin" />}
-      {children}
-    </Button>
-  );
+    return (
+        <Button {...props}>
+            {loading && <Loader2 className="animate-spin" />}
+            {children}
+        </Button>
+    );
 }

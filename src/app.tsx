@@ -8,26 +8,26 @@ import NewAdvertPage from "./pages/adverts/new-advert-page";
 import NotFoundPage from "./pages/error/not-found-page";
 
 export default function App() {
-  return (
-    <Routes>
-      <Route index element={<Navigate to="/adverts" />}></Route>
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/adverts"
-        element={
-          <RequireAuth>
-            <Layout>
-              <Outlet />
-            </Layout>
-          </RequireAuth>
-        }
-      >
-        <Route index element={<AdvertsPage />}></Route>
-        <Route path=":advertId" element={<AdvertPage />}></Route>
-        <Route path="new" element={<NewAdvertPage />}></Route>
-      </Route>
-      <Route path="/404" element={<NotFoundPage />} />
-      <Route path="*" element={<Navigate to="/404" />} />
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route index element={<Navigate to="/adverts" />}></Route>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+                path="/adverts"
+                element={
+                    <RequireAuth>
+                        <Layout>
+                            <Outlet />
+                        </Layout>
+                    </RequireAuth>
+                }
+            >
+                <Route index element={<AdvertsPage />}></Route>
+                <Route path=":advertId" element={<AdvertPage />}></Route>
+                <Route path="new" element={<NewAdvertPage />}></Route>
+            </Route>
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<Navigate to="/404" />} />
+        </Routes>
+    );
 }

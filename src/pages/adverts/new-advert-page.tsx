@@ -14,120 +14,123 @@ import { useAppDispatch } from "@/store";
 import { advertCreatedFulfilled, advertsCreate } from "@/store/actions";
 
 function validatePrice(value: FormDataEntryValue | null): number {
-  try {
-    return Number(value);
-  } catch (error) {
-    console.error(error);
-    return 0;
-  }
+    try {
+        return Number(value);
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 function validatePhoto(value: FormDataEntryValue | null): File | undefined {
-  if (value instanceof File) {
-    return value.size ? value : undefined;
-  }
-  return undefined;
+    if (value instanceof File) {
+        return value.size ? value : undefined;
+    }
+    return undefined;
 }
 
 export default function NewAdvertPage() {
-  const [name, setName] = useState("");
-  const [tags, setTags] = useState<Tags>([]);
-  const [loading, setLoading] = useState(false);
-  const dispatch = useAppDispatch();
+    const [name, setName] = useState("");
+    const [tags, setTags] = useState<Tags>([]);
+    const [loading, setLoading] = useState(false);
+    const dispatch = useAppDispatch();
 
-  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
+    const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+    };
 
-  const handleTagsChange = (tags: Tags) => {
-    setTags(tags);
-  };
+    const handleTagsChange = (tags: Tags) => {
+        setTags(tags);
+    };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const sale = formData.get("sale") === "sale";
-    const price = validatePrice(formData.get("price"));
-    const photo = validatePhoto(formData.get("photo"));
+        const formData = new FormData(event.currentTarget);
+        const sale = formData.get("sale") === "sale";
+        const price = validatePrice(formData.get("price"));
+        const photo = validatePhoto(formData.get("photo"));
 
-    setLoading(true);
-    const createdAdvert = await dispatch(
-      advertsCreate({
-        name,
-        sale,
-        price,
-        tags,
-        photo,
-      }),
-    );
-    const advert = await getAdvert(createdAdvert.id);
-    dispatch(advertCreatedFulfilled(advert));
-    setLoading(false);
-  };
+        setLoading(true);
+        const createdAdvert = await dispatch(
+            advertsCreate({
+                name,
+                sale,
+                price,
+                tags,
+                photo,
+            }),
+        );
+        const advert = await getAdvert(createdAdvert.id);
+        dispatch(advertCreatedFulfilled(advert));
+        setLoading(false);
+    };
 
-  const buttonDisabled = !name || !tags.length || loading;
+    const buttonDisabled = !name || !tags.length || loading;
 
-  return (
-    <div className="grid gap-4">
-      <h2 className="text-center text-3xl">Create your advert</h2>
-      <form
-        className="grid gap-4 gap-x-6 sm:grid-cols-2"
-        onSubmit={handleSubmit}
-      >
-        <FormField>
-          Name
-          <Input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={name}
-            onChange={handleNameChange}
-            autoComplete="off"
-          />
-        </FormField>
-        <FormField>
-          For sale or Looking to buy?
-          <RadioGroup
-            className="flex items-center p-2.5"
-            name="sale"
-            defaultValue="sale"
-          >
-            <Label className="flex items-center gap-2">
-              <RadioGroupItem value="sale" />
-              For sale
-            </Label>
-            <Label className="flex items-center gap-2">
-              <RadioGroupItem value="buy" />
-              Looking to buy
-            </Label>
-          </RadioGroup>
-        </FormField>
-        <FormField>
-          <span className="flex items-center gap-1">
-            Price <Euro className="stroke-primary" size={16} />
-          </span>
-          <Input type="number" name="price" defaultValue={0} />
-        </FormField>
-        <FormField>
-          Tags (at least one)
-          <TagsSelector onChange={handleTagsChange} className="justify-start" />
-        </FormField>
-        <div className="sm:col-span-2 sm:mx-auto">
-          <FormField>
-            Photo (click to upload)
-            <InputPhoto name="photo" />
-          </FormField>
+    return (
+        <div className="grid gap-4">
+            <h2 className="text-center text-3xl">Create your advert</h2>
+            <form
+                className="grid gap-4 gap-x-6 sm:grid-cols-2"
+                onSubmit={handleSubmit}
+            >
+                <FormField>
+                    Name
+                    <Input
+                        type="text"
+                        name="name"
+                        placeholder="Name"
+                        value={name}
+                        onChange={handleNameChange}
+                        autoComplete="off"
+                    />
+                </FormField>
+                <FormField>
+                    For sale or Looking to buy?
+                    <RadioGroup
+                        className="flex items-center p-2.5"
+                        name="sale"
+                        defaultValue="sale"
+                    >
+                        <Label className="flex items-center gap-2">
+                            <RadioGroupItem value="sale" />
+                            For sale
+                        </Label>
+                        <Label className="flex items-center gap-2">
+                            <RadioGroupItem value="buy" />
+                            Looking to buy
+                        </Label>
+                    </RadioGroup>
+                </FormField>
+                <FormField>
+                    <span className="flex items-center gap-1">
+                        Price <Euro className="stroke-primary" size={16} />
+                    </span>
+                    <Input type="number" name="price" defaultValue={0} />
+                </FormField>
+                <FormField>
+                    Tags (at least one)
+                    <TagsSelector
+                        onChange={handleTagsChange}
+                        className="justify-start"
+                    />
+                </FormField>
+                <div className="sm:col-span-2 sm:mx-auto">
+                    <FormField>
+                        Photo (click to upload)
+                        <InputPhoto name="photo" />
+                    </FormField>
+                </div>
+                <Button
+                    type="submit"
+                    disabled={buttonDisabled}
+                    className="w-full sm:col-span-2"
+                >
+                    {loading && <Loader2 className="animate-spin" />}
+                    {loading ? "Please wait" : "Create advert"}
+                </Button>
+            </form>
         </div>
-        <Button
-          type="submit"
-          disabled={buttonDisabled}
-          className="w-full sm:col-span-2"
-        >
-          {loading && <Loader2 className="animate-spin" />}
-          {loading ? "Please wait" : "Create advert"}
-        </Button>
-      </form>
-    </div>
-  );
+    );
 }

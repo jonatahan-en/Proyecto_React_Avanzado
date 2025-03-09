@@ -1,24 +1,24 @@
 type StorageKey = "auth";
 
 export default {
-  get(key: StorageKey) {
-    const value = localStorage.getItem(key);
+    get(key: StorageKey) {
+        const value = localStorage.getItem(key);
 
-    if (!value) {
-      return null;
-    }
-    return value;
-  },
+        if (!value) {
+            return null;
+        }
+        return value;
+    },
 
-  set(key: StorageKey, value: string) {
-    localStorage.setItem(key, value);
-  },
+    set(key: StorageKey, value: string) {
+        localStorage.setItem(key, value);
+    },
 
-  remove(key: StorageKey) {
-    localStorage.removeItem(key);
-  },
+    remove(key: StorageKey) {
+        localStorage.removeItem(key);
+    },
 
-  clear() {
-    localStorage.clear();
-  },
+    clear() {
+        localStorage.clear();
+    },
 };

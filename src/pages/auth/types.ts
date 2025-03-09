@@ -1,8 +1,8 @@
 export interface Credentials {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 export interface Login {
-  accessToken: string;
+    accessToken: string;
 }

@@ -5,24 +5,24 @@ import { type ComponentProps, type ReactNode } from "react";
 type ButtonProps = ComponentProps<typeof Button>;
 
 type ConfirmationButtonProps = Omit<ButtonProps, "onClick"> & {
-  confirmation: ReactNode;
-  confirmButton: ReactNode;
+    confirmation: ReactNode;
+    confirmButton: ReactNode;
 };
 
 export default function ConfirmationButton({
-  confirmation,
-  confirmButton,
-  ...props
+    confirmation,
+    confirmButton,
+    ...props
 }: ConfirmationButtonProps) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button {...props} />
-      </PopoverTrigger>
-      <PopoverContent className="flex items-center gap-4">
-        {confirmation}
-        {confirmButton}
-      </PopoverContent>
-    </Popover>
-  );
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button {...props} />
+            </PopoverTrigger>
+            <PopoverContent className="flex items-center gap-4">
+                {confirmation}
+                {confirmButton}
+            </PopoverContent>
+        </Popover>
+    );
 }

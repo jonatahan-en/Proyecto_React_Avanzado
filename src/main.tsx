@@ -11,19 +11,19 @@ import configureStore from "./store";
 
 const accessToken = storage.get("auth");
 if (accessToken) {
-  setAuthorizationHeader(accessToken);
+    setAuthorizationHeader(accessToken);
 }
 const router = createBrowserRouter([{ path: "*", element: <App /> }]);
 const store = configureStore({ auth: !!accessToken }, router);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Provider store={store}>
-      {/* <BrowserRouter> */}
-      <ErrorBoundary>
-        <RouterProvider router={router} />
-      </ErrorBoundary>
-      {/* </BrowserRouter> */}
-    </Provider>
-  </StrictMode>,
+    <StrictMode>
+        <Provider store={store}>
+            {/* <BrowserRouter> */}
+            <ErrorBoundary>
+                <RouterProvider router={router} />
+            </ErrorBoundary>
+            {/* </BrowserRouter> */}
+        </Provider>
+    </StrictMode>,
 );
