@@ -23,7 +23,6 @@ type ExtraArgument = {
     router: Router;
 };
 
-//
 const failurMiddleware = (router: Router) => (store) => (next) => (action) => {
     const result = next(action);
     if (!action.type.endsWith("/rejected")) {
