@@ -47,4 +47,20 @@ export default tseslint.config({
         ...react.configs["jsx-runtime"].rules,
     },
 });
+
 ```
+# Migrando a Redux y Probando
+Hemos actualizado nuestra aplicación para usar Redux para la gestión del estado. Esto incluye configurar acciones, reducers y selectores. A continuación, se ofrece una breve descripción de los cambios y cómo probarlos.
+
+Configuración de Redux
+Acciones: Define acciones para describir cambios en el estado.
+Reducers: Crea reducers para manejar acciones y actualizar el estado.
+Selectores: Escribe selectores para recuperar partes específicas del estado.
+Probando Redux
+ # Problemas 
+  
+Mientras configurábamos y probábamos nuestra componente LoginPge , encontramos un problema con la función window.matchMedia. Esta función no está disponible en el entorno de Node.js utilizado para las pruebas, lo que resulta en el siguiente error:
+
+ - TypeError: window.matchMedia is not a function
+
+

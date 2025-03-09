@@ -89,8 +89,8 @@ function LoginForm({
                     {pending
                         ? "Please wait"
                         : canSubmit
-                          ? "Log in to Nodepop"
-                          : "Enter your credentials"}
+                        ? "Log in to Nodepop"
+                        : "Enter your credentials"}
                 </ActionButton>
             </form>
             {error && (
